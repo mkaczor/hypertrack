@@ -1,15 +1,19 @@
 package pl.edu.agh.hypertrack.io;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static pl.edu.agh.hypertrack.io.Assertions.assertThat;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.junit.Test;
 
 public class JsonWorkflowReaderTest {
 
+	private static final String WORKFLOW_NAME = "workflowName";
 	private static final String INPUT_SIGNAL = "input";
 	private static final String OUTPUT_SIGNAL = "output";
 	private static final String COUNT_CONTROL = "count";
@@ -35,7 +39,7 @@ public class JsonWorkflowReaderTest {
 	}
 	
 	@Test
-	public void shouldThrowIllegalArgumentExceptionWhenReadingFromNonJsonString()
+	public void shouldThrowIllegalArgumentExceptionWhenReadingFromJsonWithWrongStructure()
 	{
 		//given
 		String json = "{\"id\": \"file\", \"valeu\" : \"FILE\"}";
@@ -48,7 +52,7 @@ public class JsonWorkflowReaderTest {
 	}
 	
 	@Test
-	public void shouldReadEmptyWorkflowWhenNonJsonStringPassedToReader()
+	public void shouldThrowIllegalArgumentExceptionWhenReadingFromNonJsonString()
 	{
 		//given
 		String nonJson = "no a JSON string";
@@ -61,6 +65,19 @@ public class JsonWorkflowReaderTest {
 	}
 	
 	@Test
+	public void shouldReadedWorkflowHaveName()
+	{
+		//given
+		String json = "{ \"name\":\"" + WORKFLOW_NAME + "\"}";
+		
+		//when
+		JsonWorkflow readWorkflow = workflowReader.readWorkflow(json);
+		
+		//then
+		assertThat(readWorkflow).hasWorkflowName(WORKFLOW_NAME);
+	}
+	
+	@Test
 	public void shouldReadedWorkflowHaveInputAndOutputSignals()
 	{
 		//given
@@ -70,8 +87,8 @@ public class JsonWorkflowReaderTest {
 		JsonWorkflow readedWorkflow = workflowReader.readWorkflow(json);
 		
 		//then
-		assertThat(readedWorkflow.getInputSignals()).containsOnly(INPUT_SIGNAL);
-		assertThat(readedWorkflow.getOutputSignals()).containsOnly(OUTPUT_SIGNAL);
+		assertThat(readedWorkflow).hasOnlyInputSignals(INPUT_SIGNAL);
+		assertThat(readedWorkflow).hasOnlyOutputSignals(OUTPUT_SIGNAL);
 	}
 	
 	private String getInputSignalJson()
@@ -94,8 +111,7 @@ public class JsonWorkflowReaderTest {
 		JsonWorkflow readedWorkflow = workflowReader.readWorkflow(json);
 		
 		//then
-		assertThat(readedWorkflow.getSignals()).extracting(JsonSignal::getSignalName).containsOnly(INPUT_SIGNAL, OUTPUT_SIGNAL);
-		assertThat(readedWorkflow.getSignals()).extracting(JsonSignal::getControlType).filteredOn(s -> s != null).containsOnly(COUNT_CONTROL);
+		assertThat(readedWorkflow).hasOnlySignals(expectedSignals());
 	}
 	
 	private String getSignalsJson()
@@ -103,6 +119,12 @@ public class JsonWorkflowReaderTest {
 		return "\"signals\": [ {"
 				+ "\"name\":\"" + INPUT_SIGNAL + "\"},"
 				+ "{\"name\":\"" + OUTPUT_SIGNAL + "\", \"control\":\"" + COUNT_CONTROL + "\" } ]";
+	}
+	
+	private JsonSignal[] expectedSignals()
+	{
+		JsonSignal expectedSignals[] = new JsonSignal[] {new JsonSignal(INPUT_SIGNAL), new JsonSignal(OUTPUT_SIGNAL, COUNT_CONTROL)};
+		return expectedSignals;
 	}
 	
 	@Test
@@ -118,10 +140,7 @@ public class JsonWorkflowReaderTest {
 		JsonWorkflow readedWorkflow = workflowReader.readWorkflow(json);
 		
 		//then
-		assertThat(readedWorkflow.getProcesses()).extracting(JsonProcess::getProcessName).containsOnly(PROCESS_NAME);
-		assertThat(readedWorkflow.getProcesses()).flatExtracting(JsonProcess::getInputSignals).containsOnly(INPUT_SIGNAL);
-		assertThat(readedWorkflow.getProcesses()).flatExtracting(JsonProcess::getOutputSignals).containsOnly(OUTPUT_SIGNAL);
-		assertThat(readedWorkflow.getProcesses()).flatExtracting(process -> process.getProperties().entrySet()).containsExactlyElementsOf(processProperties.entrySet());
+		assertThat(readedWorkflow).hasOnlyProcesses(expectedJsonProcess());
 	}
 	
 	private String getProcessesJson()
@@ -132,5 +151,17 @@ public class JsonWorkflowReaderTest {
 	        + "\"" + FUNC_PROPERTY + "\": \"" + FUNC + "\","
 	        + "\"ins\": [ \"" + INPUT_SIGNAL+ "\" ],"
 	        + "\"outs\": [ \""+ OUTPUT_SIGNAL +"\" ]}]";
+	}
+	
+	private JsonProcess expectedJsonProcess()
+	{
+		Map<String, Object> processProperties = new HashMap<>();
+		processProperties.put(TYPE_PROPERTY, TYPE);
+		processProperties.put(FUNC_PROPERTY, FUNC);
+		
+		JsonProcess expectedProcess = new JsonProcess(PROCESS_NAME, new HashSet<>(asList(INPUT_SIGNAL)), new HashSet<>(asList(OUTPUT_SIGNAL)));
+		expectedProcess.setProperty(TYPE_PROPERTY, TYPE);
+		expectedProcess.setProperty(FUNC_PROPERTY, FUNC);
+		return expectedProcess;
 	}
 }

@@ -1,13 +1,10 @@
 package pl.edu.agh.hypertrack.io;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 public class HyperflowWorkflowReader {
 
-	public void read(String json) //maybe file to Path....
+	public void read(String json)
 	{
-		ObjectMapper mapper = new ObjectMapper();
-//		mapper.r
+
 	}
 	
 }

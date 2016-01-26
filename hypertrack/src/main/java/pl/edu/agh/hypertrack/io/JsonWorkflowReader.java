@@ -4,11 +4,12 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class JsonWorkflowReader {
+class JsonWorkflowReader {
+
+	private ObjectMapper mapper = new ObjectMapper();
 
 	public JsonWorkflow readWorkflow(String json)
 	{
-		ObjectMapper mapper = new ObjectMapper();
 		try {
 			return mapper.readValue(json, JsonWorkflow.class);
 		} catch (IOException e) {
