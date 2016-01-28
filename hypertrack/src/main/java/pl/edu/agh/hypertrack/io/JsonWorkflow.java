@@ -11,21 +11,31 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 final class JsonWorkflow {
 
 	@JsonProperty("name")
-	private String workflowName;
+	private final String workflowName;
 	
 	@JsonProperty("processes")
-	private Collection<JsonProcess> processes;
+	private final Collection<JsonProcess> processes;
 	
 	@JsonProperty("signals")
-	private Collection<JsonSignal> signals;
+	private final Collection<JsonSignal> signals;
 	
 	@JsonProperty("ins")
-	private Collection<String> inputSignals;
+	private final Collection<String> inputSignals;
 	
 	@JsonProperty("outs")
-	private Collection<String> outputSignals;
+	private final Collection<String> outputSignals;
 
-	private JsonWorkflow() {}
+	JsonWorkflow(@JsonProperty("name") String workflowName,
+			@JsonProperty("processes") Collection<JsonProcess> processes,
+			@JsonProperty("signals") Collection<JsonSignal> signals,
+			@JsonProperty("ins") Collection<String> inputSignals,
+			@JsonProperty("outs") Collection<String> outputSignals) {
+		this.workflowName = workflowName;
+		this.processes = processes;
+		this.signals = signals;
+		this.inputSignals = inputSignals;
+		this.outputSignals = outputSignals;
+	}
 	
 	public String getWorkflowName() {
 		return workflowName;

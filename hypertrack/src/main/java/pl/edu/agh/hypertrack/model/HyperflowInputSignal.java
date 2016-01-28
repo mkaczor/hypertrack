@@ -5,5 +5,21 @@ public class HyperflowInputSignal {
 	private HypertrackEntityUniqueKey key;
 	private HyperflowOutputSignal source;
 	private HyperflowProcess target;
-	private HyperflowInputActivation activation;
+	private HyperflowInputActivationCondition activationCondition;
+	
+	public HypertrackEntityUniqueKey getKey() {
+		return key;
+	}
+	
+	public HyperflowOutputSignal getSource() {
+		return source;
+	}
+	
+	public HyperflowProcess getTarget() {
+		return target;
+	}
+	
+	public HyperflowInputActivationCondition getActivationCondition() {
+		return activationCondition;
+	}
 }

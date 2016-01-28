@@ -18,7 +18,7 @@ final class JsonSignal {
 
 	@JsonCreator
 	JsonSignal(@JsonProperty("name") String signalName, 
-			   @JsonProperty("control") String controlType) {
+			@JsonProperty("control") String controlType) {
 		this.signalName = signalName;
 		this.controlType = controlType;
 	}

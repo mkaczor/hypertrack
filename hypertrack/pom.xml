@@ -30,6 +30,9 @@
 					<configuration>
 						<classes>
 							<param>pl.edu.agh.hypertrack.io.JsonWorkflow</param>
+							<param>pl.edu.agh.hypertrack.model.HyperflowInputSignal</param>
+							<param>pl.edu.agh.hypertrack.model.HyperflowOutputSignal</param>
+							<param>pl.edu.agh.hypertrack.model.HyperflowProcess</param>
 						</classes>
 						<targetDir>generated/src/test/java</targetDir>
 						<generateAssertions>true</generateAssertions>
@@ -47,16 +50,19 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-neo4j</artifactId>
 			<version>${spring-data-neo4j.version}</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -68,6 +74,13 @@
 			<groupId>org.assertj</groupId>
 			<artifactId>assertj-core</artifactId>
 			<version>3.3.0</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>1.10.19</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

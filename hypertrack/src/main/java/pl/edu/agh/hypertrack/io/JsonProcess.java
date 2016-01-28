@@ -1,8 +1,8 @@
 package pl.edu.agh.hypertrack.io;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -16,14 +16,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 final class JsonProcess {
 
 	private final String processName;
-	private final Set<String> inputSignals;
-	private final Set<String> outputSignals;
+	private final Collection<String> inputSignals;
+	private final Collection<String> outputSignals;
 	private final Map<String, Object> properties = new HashMap<>();
 
 	@JsonCreator
 	JsonProcess(@JsonProperty("name") String processName, 
-			    @JsonProperty("ins") Set<String> inputSignals,
-			    @JsonProperty("outs") Set<String> outputSignals) {
+			@JsonProperty("ins") Collection<String> inputSignals,
+			@JsonProperty("outs") Collection<String> outputSignals) {
 		this.processName = processName;
 		this.inputSignals = inputSignals;
 		this.outputSignals = outputSignals;
@@ -33,11 +33,11 @@ final class JsonProcess {
 		return processName;
 	}
 
-	public Set<String> getInputSignals() {
+	public Collection<String> getInputSignals() {
 		return inputSignals;
 	}
 
-	public Set<String> getOutputSignals() {
+	public Collection<String> getOutputSignals() {
 		return outputSignals;
 	}
 

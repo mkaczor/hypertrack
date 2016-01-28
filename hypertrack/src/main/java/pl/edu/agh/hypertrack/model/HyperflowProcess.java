@@ -11,4 +11,20 @@ public class HyperflowProcess {
 //	private boolean ordered;
 	private Set<HyperflowInputSignal> inputSignals;
 	private Set<HyperflowOutputSignal> outputSignals;
+	
+	public HypertrackEntityUniqueKey getKey() {
+		return key;
+	}
+	
+	public HyperflowProcessType getProcessType() {
+		return processType;
+	}
+	
+	public Set<HyperflowInputSignal> getInputSignals() {
+		return inputSignals;
+	}
+	
+	public Set<HyperflowOutputSignal> getOutputSignals() {
+		return outputSignals;
+	}
 }
