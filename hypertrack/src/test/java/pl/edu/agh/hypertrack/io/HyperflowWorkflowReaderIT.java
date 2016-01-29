@@ -24,7 +24,7 @@ import pl.edu.agh.hypertrack.model.HyperflowWorkflow;
 import pl.edu.agh.hypertrack.model.HypertrackEntityUniqueKey;
 
 @RunWith(MockitoJUnitRunner.class)
-public class HyperflowWorkflowReaderTest {
+public class HyperflowWorkflowReaderIT {
 
 	private final static String JSON_STRING = "json";
 	private final static String WORKFLOW_NAME = "workflowName";
