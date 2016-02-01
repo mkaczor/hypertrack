@@ -8,7 +8,6 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -18,7 +17,7 @@ final class JsonProcess {
 	private final String processName;
 	private final Collection<String> inputSignals;
 	private final Collection<String> outputSignals;
-	private final Map<String, Object> properties = new HashMap<>();
+	private final Map<String, String> properties = new HashMap<>();
 
 	@JsonCreator
 	JsonProcess(@JsonProperty("name") String processName, 
@@ -41,9 +40,8 @@ final class JsonProcess {
 		return outputSignals;
 	}
 
-	@JsonAnyGetter
-	public Map<String, Object> getProperties() {
-		return properties;
+	public String getProperty(String propertyName) {
+		return properties.get(propertyName);
 	}
 
 	@JsonAnySetter
