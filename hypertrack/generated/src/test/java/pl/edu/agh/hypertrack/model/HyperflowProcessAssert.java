@@ -239,4 +239,27 @@ public class HyperflowProcessAssert extends AbstractAssert<HyperflowProcessAsser
     return this;
   }
 
+  /**
+   * Verifies that the actual HyperflowProcess's properties is equal to the given one.
+   * @param properties the given properties to compare the actual HyperflowProcess's properties to.
+   * @return this assertion object.
+   * @throws AssertionError - if the actual HyperflowProcess's properties is not equal to the given one.
+   */
+  public HyperflowProcessAssert hasProperties(java.util.Map properties) {
+    // check that actual HyperflowProcess we want to make assertions on is not null.
+    isNotNull();
+
+    // overrides the default error message with a more explicit one
+    String assertjErrorMessage = "\nExpecting properties of:\n  <%s>\nto be:\n  <%s>\nbut was:\n  <%s>";
+    
+    // null safe check
+    java.util.Map actualProperties = actual.getProperties();
+    if (!Objects.areEqual(actualProperties, properties)) {
+      failWithMessage(assertjErrorMessage, actual, properties, actualProperties);
+    }
+
+    // return the current assertion for method chaining
+    return this;
+  }
+
 }

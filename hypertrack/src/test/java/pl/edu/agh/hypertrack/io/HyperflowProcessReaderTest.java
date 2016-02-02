@@ -1,16 +1,13 @@
 package pl.edu.agh.hypertrack.io;
 
-import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static pl.edu.agh.hypertrack.model.HyperflowProcessAssert.assertThat;
-
-import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +18,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import pl.edu.agh.hypertrack.model.HyperflowInputSignal;
 import pl.edu.agh.hypertrack.model.HyperflowOutputSignal;
 import pl.edu.agh.hypertrack.model.HyperflowProcess;
+import pl.edu.agh.hypertrack.model.HyperflowProcessType;
 import pl.edu.agh.hypertrack.model.HypertrackEntityUniqueKey;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -34,56 +32,85 @@ public class HyperflowProcessReaderTest {
 	@Mock
 	private HyperflowSignalReader signalReader;
 	
+	@Mock
+	private JsonProcessSignalsValidator signlasValidator;
+	
 	@InjectMocks
 	private HyperflowProcessReader processReader;
-	
-	private JsonProcess process = new JsonProcess(PROCESS_NAME, asList(PROCESS_INPUT_SIGNAL_NAME), asList(PROCESS_OUTPUT_SIGNAL_NAME));
-	
+
+	@Test
+	public void shouldRethrowExceptionThrownBySignalsValidatorWhenProcessSignalsValidationFails() {
+		
+		//given
+		JsonProcess jsonProcess = aJsonProcess();
+		HypertrackJsonReadException validationException = new HypertrackJsonReadException("Validation error");
+		willThrow(validationException).given(signlasValidator).validate(jsonProcess);
+		
+		//when
+		Throwable thrown = catchThrowable(() -> processReader.read(WORKFLOW_NAME, jsonProcess));
+		
+		//then
+		assertThat(thrown).isSameAs(validationException);
+	}
 	
 	@Test
-	public void shouldReadedWorkflowHaveProcessLikeInJsonWorkflow() {
+	public void shouldReadedProcessHasCorrectKey() {
+		
+		//given
+		JsonProcess jsonProcess = aJsonProcess();
+		
+		//when
+		HyperflowProcess hyperflowProcess = processReader.read(WORKFLOW_NAME, jsonProcess);
+		
+		//then
+		assertThat(hyperflowProcess).hasKey(new HypertrackEntityUniqueKey(WORKFLOW_NAME, PROCESS_NAME));
+	}
+	
+	@Test
+	public void shouldReadedProcessHasSameTypeAsJsonProcess() {
+		
+		//given
+		JsonProcess jsonProcess = aJsonProcess();
+		
+		//when
+		HyperflowProcess hyperflowProcess = processReader.read(WORKFLOW_NAME, jsonProcess);
+		
+		//then
+		assertThat(hyperflowProcess).hasProcessType(HyperflowProcessType.FOREACH);
+	}
+	
+	@Test
+	public void shouldReadedProcessHasSamePropertiesAsJsonProcess() {
+		
+		//given
+		JsonProcess jsonProcess = aJsonProcess();
+		jsonProcess.setProperty("funct", "funcVal");
+		
+		//when
+		HyperflowProcess hyperflowProcess = processReader.read(WORKFLOW_NAME, jsonProcess);
+		
+		//then
+		assertThat(hyperflowProcess.getProperties()).containsAllEntriesOf(jsonProcess.getProperties());
+	}
+	
+	@Test
+	public void shouldReadedProcessHaveProcessLikeInJsonWorkflow() {
 		
 		// given
-		JsonWorkflow jsonWorkflow = aJsonWorkflow().build();
 		HyperflowInputSignal input = new HyperflowInputSignal();
 		HyperflowOutputSignal output = new HyperflowOutputSignal();
 		given(signalReader.readInputSignal(any(), eq(PROCESS_INPUT_SIGNAL_NAME))).willReturn(input);
 		given(signalReader.readOutputSignal(any(), eq(PROCESS_OUTPUT_SIGNAL_NAME))).willReturn(output);
 		
 		// when
-		Set<HyperflowProcess> workflowProcesses = processReader.read(jsonWorkflow);
+		HyperflowProcess hyperflowProcess = processReader.read(WORKFLOW_NAME, aJsonProcess());
 		
 		//then
-		assertThat(workflowProcesses).hasSize(1);
-		HyperflowProcess hyperflowProcess = workflowProcesses.iterator().next();
-		
-		assertThat(hyperflowProcess).hasKey(new HypertrackEntityUniqueKey(WORKFLOW_NAME, PROCESS_NAME));
 		assertThat(hyperflowProcess).hasOnlyInputSignals(input);
 		assertThat(hyperflowProcess).hasOnlyOutputSignals(output);
 	}
 	
-	@Test
-	public void shouldThrowExceptionWhenTwoProcessesWithTheSameNameDefined() {
-		
-		// given
-		JsonWorkflow jsonWorkflow = aJsonWorkflow().withProcesses(process, processWithSameNameAs(process)).build();
-
-		// when
-		Throwable thrown = catchThrowable(() -> processReader.read(jsonWorkflow));
-
-		// then
-		assertThat(thrown).isInstanceOf(IllegalArgumentException.class).hasMessage(format("Process name " + PROCESS_NAME + " definition duplicated within workflow " + WORKFLOW_NAME));
-	}
-	
-	//TODO: perhaps different place
-	private JsonWorkflowBuilder aJsonWorkflow() {
-		return JsonWorkflowBuilder.aJsonWorkflow().withName(WORKFLOW_NAME)
-			.withSignals(new JsonSignal(PROCESS_INPUT_SIGNAL_NAME), new JsonSignal(PROCESS_OUTPUT_SIGNAL_NAME))
-			.withProcesses(process);
-	}
-	
-	private JsonProcess processWithSameNameAs(JsonProcess processToDuplicate) {
-		
-		return new JsonProcess(processToDuplicate.getProcessName(), emptyList(), emptyList());
+	private JsonProcess aJsonProcess() {
+		return new JsonProcess(PROCESS_NAME, HyperflowProcessType.FOREACH, asList(PROCESS_INPUT_SIGNAL_NAME), asList(PROCESS_OUTPUT_SIGNAL_NAME));
 	}
 }

@@ -5,12 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static pl.edu.agh.hypertrack.io.Assertions.assertThat;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
+
+import pl.edu.agh.hypertrack.model.HyperflowProcessType;
 
 public class JsonWorkflowReaderTest {
 
@@ -19,9 +20,9 @@ public class JsonWorkflowReaderTest {
 	private static final String OUTPUT_SIGNAL = "output";
 	private static final String COUNT_CONTROL = "count";
 	private static final String PROCESS_NAME = "proc";
-	private static final String TYPE_PROPERTY = "type";
-	private static final String TYPE = "dataflow";
 	private static final String FUNC_PROPERTY = "function";
+	private static final String TYPE_PROPERTY = "type";
+	private static final String FOREACH_TYPE = "FOREACH";
 	private static final String FUNC = "func";
 	
 	private JsonWorkflowReader workflowReader = new JsonWorkflowReader();
@@ -146,35 +147,59 @@ public class JsonWorkflowReaderTest {
 	
 	
 	@Test
-	public void shouldReadedWorkflowHaveProcesses() {
+	public void shouldReadedWorkflowHaveProcessesWithDefaultTypeWhenTypeNotSpecified() {
 		
 		//given
 		String json = "{" + getProcessesJson() + "}";
-		Map<String, Object> processProperties = new HashMap<>();
-		processProperties.put(TYPE_PROPERTY, TYPE);
-		processProperties.put(FUNC_PROPERTY, FUNC);
 		
 		//when
 		JsonWorkflow readedWorkflow = workflowReader.readWorkflow(json);
 		
 		//then
-		assertThat(readedWorkflow).hasOnlyProcesses(expectedJsonProcess());
+		assertThat(readedWorkflow).hasOnlyProcesses(jsonProcessWithDefaultType());
 	}
 	
 	private String getProcessesJson() {
-		return "\"processes\": [ { " 
-	        + "\"name\": \"" + PROCESS_NAME +"\","
-		    + "\"" + TYPE_PROPERTY + "\": \"" + TYPE + "\","
-	        + "\"" + FUNC_PROPERTY + "\": \"" + FUNC + "\","
-	        + "\"ins\": [ \"" + INPUT_SIGNAL+ "\" ],"
-	        + "\"outs\": [ \""+ OUTPUT_SIGNAL +"\" ]}]";
+		return getProcessesJson(Optional.empty());
 	}
 	
-	private JsonProcess expectedJsonProcess() {
+	private JsonProcess jsonProcessWithDefaultType() {
 		JsonProcess expectedProcess = new JsonProcess(PROCESS_NAME, asList(INPUT_SIGNAL), asList(OUTPUT_SIGNAL));
-		expectedProcess.setProperty(TYPE_PROPERTY, TYPE);
 		expectedProcess.setProperty(FUNC_PROPERTY, FUNC);
 		return expectedProcess;
+	}
+	
+	@Test
+	public void shouldReadedWorkflowHaveProcessesWithSpecifiedType() {
+		
+		//given
+		String json = "{" + getProcessesJson(FOREACH_TYPE) + "}";
+		
+		//when
+		JsonWorkflow readedWorkflow = workflowReader.readWorkflow(json);
+		
+		//then
+		assertThat(readedWorkflow).hasOnlyProcesses(jsonProcessWithType(HyperflowProcessType.FOREACH));
+	}
+	
+	private String getProcessesJson(String type) {
+		return getProcessesJson(Optional.of(type));
+	}
+
+	private JsonProcess jsonProcessWithType(HyperflowProcessType type) {
+		JsonProcess expectedProcess = new JsonProcess(PROCESS_NAME, type, asList(INPUT_SIGNAL), asList(OUTPUT_SIGNAL));
+		expectedProcess.setProperty(FUNC_PROPERTY, FUNC);
+		return expectedProcess;
+	}
+
+	private String getProcessesJson(Optional<String> type) {
+		StringBuilder result = new StringBuilder("\"processes\": [ { " 
+	        + "\"name\": \"" + PROCESS_NAME +"\",");
+		type.ifPresent(t -> result.append("\"" + TYPE_PROPERTY + "\": \"" + t + "\","));
+		result.append("\"" + FUNC_PROPERTY + "\": \"" + FUNC + "\","
+	        + "\"ins\": [ \"" + INPUT_SIGNAL+ "\" ],"
+	        + "\"outs\": [ \""+ OUTPUT_SIGNAL +"\" ]}]");
+		return result.toString();
 	}
 	
 	@Test

@@ -1,5 +1,6 @@
 package pl.edu.agh.hypertrack.io;
 
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static pl.edu.agh.hypertrack.model.HyperflowInputSignalAssert.assertThat;
@@ -30,7 +31,7 @@ public class HyperflowSignalReaderTest {
 	public void shouldReadInputSignalWhenSignalNameAndTargetProcessSpecified() {
 		
 		//given
-		HyperflowProcess targetProcess = new HyperflowProcess(processKey, HyperflowProcessType.DATAFLOW);
+		HyperflowProcess targetProcess = new HyperflowProcess(processKey, HyperflowProcessType.DATAFLOW, emptyMap());
 		
 		//when
 		HyperflowInputSignal inputSignal = signalReader.readInputSignal(targetProcess, SIGNAL_NAME);
@@ -45,7 +46,7 @@ public class HyperflowSignalReaderTest {
 	public void shouldReadOutputSignalWhenSignalNameAndSourceProcessSpecified() {
 		
 		//given
-		HyperflowProcess sourceProcess = new HyperflowProcess(processKey, HyperflowProcessType.DATAFLOW);
+		HyperflowProcess sourceProcess = new HyperflowProcess(processKey, HyperflowProcessType.DATAFLOW, emptyMap());
 		
 		//when
 		HyperflowOutputSignal outputSignal = signalReader.readOutputSignal(sourceProcess, SIGNAL_NAME);
@@ -60,9 +61,9 @@ public class HyperflowSignalReaderTest {
 	public void shouldThrowIllegalArgumentExceptionWhenReadingOutputSignalWithSameNameButDifferentSource() {
 		
 		//given
-		HyperflowProcess sourceProcess = new HyperflowProcess(processKey, HyperflowProcessType.DATAFLOW);
+		HyperflowProcess sourceProcess = new HyperflowProcess(processKey, HyperflowProcessType.DATAFLOW, emptyMap());
 		HyperflowProcess secondSourceProcess = new HyperflowProcess(
-				new HypertrackEntityUniqueKey(WORKFLOW_NAME, "differentProcessName"), HyperflowProcessType.DATAFLOW);
+				new HypertrackEntityUniqueKey(WORKFLOW_NAME, "differentProcessName"), HyperflowProcessType.DATAFLOW, emptyMap());
 		
 		//when
 		signalReader.readOutputSignal(sourceProcess, SIGNAL_NAME);
