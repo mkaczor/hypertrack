@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-class JsonWorkflowReader {
+final class JsonWorkflowReader {
 
 	private ObjectMapper mapper = new ObjectMapper();
 

@@ -10,6 +10,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
+
 public class JsonWorkflowReaderTest {
 
 	private static final String WORKFLOW_NAME = "workflowName";
@@ -91,12 +93,10 @@ public class JsonWorkflowReaderTest {
 	}
 	
 	private String getInputSignalJson() {
-		
 		return "\"ins\": [ \"" + INPUT_SIGNAL + "\" ]";
 	}
 	
 	private String getOutputSignalJson() {
-		
 		return "\"outs\": [ \"" + OUTPUT_SIGNAL + "\" ]";
 	}
 	
@@ -114,17 +114,36 @@ public class JsonWorkflowReaderTest {
 	}
 	
 	private String getSignalsJson() {
-		
 		return "\"signals\": [ {"
 				+ "\"name\":\"" + INPUT_SIGNAL + "\"},"
 				+ "{\"name\":\"" + OUTPUT_SIGNAL + "\", \"control\":\"" + COUNT_CONTROL + "\" } ]";
 	}
 	
 	private JsonSignal[] expectedSignals() {
-		
 		JsonSignal expectedSignals[] = new JsonSignal[] {new JsonSignal(INPUT_SIGNAL), new JsonSignal(OUTPUT_SIGNAL, COUNT_CONTROL)};
 		return expectedSignals;
 	}
+	
+	@Test
+	public void shouldThrowIllegalArgumentExceptionWhenSignalDoesNotHaveUniqueName() {
+	
+		//given
+		String json = "{" + getSignalsJsonWithNonUniqueNames() + "}";
+		
+		//when
+		Throwable thrown = catchThrowable(() -> workflowReader.readWorkflow(json));
+		
+		//then
+		assertThat(thrown).isInstanceOf(IllegalArgumentException.class).hasCauseInstanceOf(JsonMappingException.class);
+		assertThat(thrown.getCause()).hasMessageContaining("Already had POJO for id");
+	}
+	
+	private String getSignalsJsonWithNonUniqueNames() {
+		return "\"signals\": [ {"
+				+ "\"name\":\"" + INPUT_SIGNAL + "\"},"
+				+ "{\"name\":\"" + INPUT_SIGNAL + "\", \"control\":\"" + COUNT_CONTROL + "\" } ]";
+	}
+	
 	
 	@Test
 	public void shouldReadedWorkflowHaveProcesses() {
@@ -143,7 +162,6 @@ public class JsonWorkflowReaderTest {
 	}
 	
 	private String getProcessesJson() {
-		
 		return "\"processes\": [ { " 
 	        + "\"name\": \"" + PROCESS_NAME +"\","
 		    + "\"" + TYPE_PROPERTY + "\": \"" + TYPE + "\","
@@ -153,10 +171,29 @@ public class JsonWorkflowReaderTest {
 	}
 	
 	private JsonProcess expectedJsonProcess() {
-		
 		JsonProcess expectedProcess = new JsonProcess(PROCESS_NAME, asList(INPUT_SIGNAL), asList(OUTPUT_SIGNAL));
 		expectedProcess.setProperty(TYPE_PROPERTY, TYPE);
 		expectedProcess.setProperty(FUNC_PROPERTY, FUNC);
 		return expectedProcess;
+	}
+	
+	@Test
+	public void shouldThrowIllegalArgumentExceptionWhenProcessDoesNotHaveUniqueName() {
+		
+		//given
+		String json = "{" + getProcessesJsonWithDuplicatedNames() + "}";
+		
+		//when
+		Throwable thrown = catchThrowable(() -> workflowReader.readWorkflow(json));
+		
+		//then
+		assertThat(thrown).isInstanceOf(IllegalArgumentException.class).hasCauseInstanceOf(JsonMappingException.class);
+		assertThat(thrown.getCause()).hasMessageContaining("Already had POJO for id");
+	}
+	
+	private String getProcessesJsonWithDuplicatedNames() {
+		return "\"processes\": [ { " 
+		        + "\"name\": \"" + PROCESS_NAME +"\"},"
+			    + "{\"name\": \"" + PROCESS_NAME +"\"}]";
 	}
 }

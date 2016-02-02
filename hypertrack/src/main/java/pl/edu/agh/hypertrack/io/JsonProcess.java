@@ -9,20 +9,27 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class,property="name")
 final class JsonProcess {
 
-	private final String processName;
-	private final Collection<String> inputSignals;
-	private final Collection<String> outputSignals;
-	private final Map<String, String> properties = new HashMap<>();
+	@JsonProperty("name") 
+	private String processName;
+	
+	@JsonProperty("ins")
+	private Collection<String> inputSignals;
+	
+	@JsonProperty("outs")
+	private Collection<String> outputSignals;
+	private Map<String, String> properties = new HashMap<>();
 
-	@JsonCreator
-	JsonProcess(@JsonProperty("name") String processName, 
-			@JsonProperty("ins") Collection<String> inputSignals,
-			@JsonProperty("outs") Collection<String> outputSignals) {
+	@SuppressWarnings("unused")
+	private JsonProcess() {}
+	
+	JsonProcess(String processName, Collection<String> inputSignals, Collection<String> outputSignals) {
 		this.processName = processName;
 		this.inputSignals = inputSignals;
 		this.outputSignals = outputSignals;

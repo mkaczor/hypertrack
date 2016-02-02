@@ -10,19 +10,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 final class JsonWorkflow {
 
-	@JsonProperty("name")
 	private final String workflowName;
-	
-	@JsonProperty("processes")
 	private final Collection<JsonProcess> processes;
-	
-	@JsonProperty("signals")
 	private final Collection<JsonSignal> signals;
-	
-	@JsonProperty("ins")
 	private final Collection<String> inputSignals;
-	
-	@JsonProperty("outs")
 	private final Collection<String> outputSignals;
 
 	JsonWorkflow(@JsonProperty("name") String workflowName,

@@ -6,6 +6,10 @@ import pl.edu.agh.hypertrack.model.HyperflowProcess;
 
 class HyperflowSignalReader {
 
+	public void readSignals(JsonWorkflow jsonWorkflow) {
+		
+	}
+	
 	public HyperflowInputSignal readInputSignal(HyperflowProcess target, String signal) {
 		return null;
 	}

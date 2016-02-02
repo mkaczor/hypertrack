@@ -4,21 +4,27 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class,property="name")
 final class JsonSignal {
 	
-	private final String signalName;
-	private final String controlType;
+	@JsonProperty("name")
+	private String signalName;
+	
+	@JsonProperty("control")
+	private String controlType;
 
+	@SuppressWarnings("unused")
+	private JsonSignal() {}
+	
 	JsonSignal(String signalName) {
 		this(signalName, null);
 	}
 
-	@JsonCreator
-	JsonSignal(@JsonProperty("name") String signalName, 
-			@JsonProperty("control") String controlType) {
+	JsonSignal(String signalName, String controlType) {
 		this.signalName = signalName;
 		this.controlType = controlType;
 	}
@@ -46,6 +52,4 @@ final class JsonSignal {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
 	}
-	
-	
 }

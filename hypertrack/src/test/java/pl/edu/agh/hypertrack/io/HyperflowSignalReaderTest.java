@@ -24,8 +24,10 @@ public class HyperflowSignalReaderTest {
 	private HypertrackEntityUniqueKey signalKey = new HypertrackEntityUniqueKey(WORKFLOW_NAME, SIGNAL_NAME);
 	private HypertrackEntityUniqueKey processKey = new HypertrackEntityUniqueKey(WORKFLOW_NAME, PROCESS_NAME);
 	
+	
+	
 	@Test
-	public void shouldReadInputSignalWhenJsonSignalAndTargetProcessSpecified() {
+	public void shouldReadInputSignalWhenSignalNameAndTargetProcessSpecified() {
 		
 		//given
 		HyperflowProcess targetProcess = new HyperflowProcess(processKey, HyperflowProcessType.DATAFLOW);
@@ -40,7 +42,7 @@ public class HyperflowSignalReaderTest {
 	}
 	
 	@Test
-	public void shouldReadOutputSignalWhenJsonSignalAndSourceProcessSpecified() {
+	public void shouldReadOutputSignalWhenSignalNameAndSourceProcessSpecified() {
 		
 		//given
 		HyperflowProcess sourceProcess = new HyperflowProcess(processKey, HyperflowProcessType.DATAFLOW);
