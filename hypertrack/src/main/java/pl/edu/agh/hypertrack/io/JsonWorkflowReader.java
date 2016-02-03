@@ -8,7 +8,7 @@ final class JsonWorkflowReader {
 
 	private ObjectMapper mapper = new ObjectMapper();
 
-	public JsonWorkflow readWorkflow(String json)
+	public JsonWorkflow read(String json)
 	{
 		try {
 			return mapper.readValue(json, JsonWorkflow.class);

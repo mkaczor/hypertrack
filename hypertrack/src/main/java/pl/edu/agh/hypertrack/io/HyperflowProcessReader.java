@@ -5,7 +5,11 @@ import pl.edu.agh.hypertrack.model.HypertrackEntityUniqueKey;
 
 final class HyperflowProcessReader {
 	
-	private static final String PROCESS_TYPE = "type";
+	/*
+	 * TODO:
+	 * - initiazlization (spring boot)
+	 * - builder dla procesu
+	 */
 	
 	private HyperflowSignalReader signalReader;
 	private JsonProcessSignalsValidator signalsValidator;

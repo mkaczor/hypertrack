@@ -32,7 +32,6 @@ final class JsonProcess {
 	@JsonProperty("outs")
 	private Collection<String> outputSignals;
 	
-	
 	private Map<String, String> properties = new HashMap<>();
 
 	@SuppressWarnings("unused")

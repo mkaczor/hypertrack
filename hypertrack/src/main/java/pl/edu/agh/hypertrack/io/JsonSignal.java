@@ -29,7 +29,6 @@ final class JsonSignal {
 		this.controlType = controlType;
 	}
 	
-	
 	public String getSignalName() {
 		return signalName;
 	}

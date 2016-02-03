@@ -49,7 +49,7 @@ public class HyperflowWorkflowReaderIT {
 	public void shouldReadedWorkflowHaveInputSignalsLikeInJsonWorkflow()
 	{
 		//given
-		given(jsonReader.readWorkflow(JSON_STRING)).willReturn(aCorrectJsonWorkflow().build());
+		given(jsonReader.read(JSON_STRING)).willReturn(aCorrectJsonWorkflow().build());
 		
 		//when
 		HyperflowWorkflow workflow = workflowReader.read(JSON_STRING);
@@ -67,7 +67,7 @@ public class HyperflowWorkflowReaderIT {
 	public void shouldReadedWorkflowHaveOutputSignalsLikeInJsonWorkflow()
 	{
 		//given
-		given(jsonReader.readWorkflow(JSON_STRING)).willReturn(aCorrectJsonWorkflow().build());
+		given(jsonReader.read(JSON_STRING)).willReturn(aCorrectJsonWorkflow().build());
 		
 		//when
 		HyperflowWorkflow workflow = workflowReader.read(JSON_STRING);
@@ -84,7 +84,7 @@ public class HyperflowWorkflowReaderIT {
 	public void shouldReadedWorkflowHaveProcessLikeInJsonWorkflow() {
 		
 		// given
-		given(jsonReader.readWorkflow(JSON_STRING)).willReturn(aCorrectJsonWorkflow().build());
+		given(jsonReader.read(JSON_STRING)).willReturn(aCorrectJsonWorkflow().build());
 
 		// when
 		HyperflowWorkflow workflow = workflowReader.read(JSON_STRING);
@@ -114,7 +114,7 @@ public class HyperflowWorkflowReaderIT {
 	public void shouldReadedWorkflowHaveCorrectlyConnectedProcesses() {
 		
 		// given
-		given(jsonReader.readWorkflow(JSON_STRING)).willReturn(aCorrectJsonWorkflow().build());
+		given(jsonReader.read(JSON_STRING)).willReturn(aCorrectJsonWorkflow().build());
 
 		// when
 		HyperflowWorkflow workflow = workflowReader.read(JSON_STRING);

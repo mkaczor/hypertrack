@@ -1,11 +1,12 @@
 package pl.edu.agh.hypertrack.io;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.joining;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static pl.edu.agh.hypertrack.io.Assertions.assertThat;
 
-import java.util.Optional;
+import java.util.Map.Entry;
 
 import org.junit.Test;
 
@@ -15,6 +16,12 @@ import pl.edu.agh.hypertrack.model.HyperflowProcessType;
 
 public class JsonWorkflowReaderTest {
 
+	/*
+	 * TODO:
+	 * - tworzenie JSONA - jakas klasa
+	 * - builder do procesow/sygnalow
+	 */
+	
 	private static final String WORKFLOW_NAME = "workflowName";
 	private static final String INPUT_SIGNAL = "input";
 	private static final String OUTPUT_SIGNAL = "output";
@@ -27,6 +34,12 @@ public class JsonWorkflowReaderTest {
 	
 	private JsonWorkflowReader workflowReader = new JsonWorkflowReader();
 	
+	private JsonProcessBuilder aJsonProcess = JsonProcessBuilder.aJsonProcess()
+			.withProcessName(PROCESS_NAME)
+			.withInputSignals(INPUT_SIGNAL)
+			.withOutputSignals(OUTPUT_SIGNAL)
+			.withProperty(FUNC_PROPERTY, FUNC);
+	
 	@Test
 	public void shouldThrowIllegalArgumentExceptionWhenReadingFromEmptySting() {
 		
@@ -34,7 +47,7 @@ public class JsonWorkflowReaderTest {
 		String json = "";
 		
 		//when
-		Throwable thrown = catchThrowable(() -> workflowReader.readWorkflow(json));
+		Throwable thrown = catchThrowable(() -> workflowReader.read(json));
 		
 		//then
 		assertThat(thrown).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("Error reading");
@@ -47,7 +60,7 @@ public class JsonWorkflowReaderTest {
 		String json = "{\"id\": \"file\", \"valeu\" : \"FILE\"}";
 		
 		// when
-		Throwable thrown = catchThrowable(() -> workflowReader.readWorkflow(json));
+		Throwable thrown = catchThrowable(() -> workflowReader.read(json));
 
 		// then
 		assertThat(thrown).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("Error reading");
@@ -60,7 +73,7 @@ public class JsonWorkflowReaderTest {
 		String nonJson = "no a JSON string";
 		
 		// when
-		Throwable thrown = catchThrowable(() -> workflowReader.readWorkflow(nonJson));
+		Throwable thrown = catchThrowable(() -> workflowReader.read(nonJson));
 
 		// then
 		assertThat(thrown).isInstanceOf(IllegalArgumentException.class).hasMessageContaining("Error reading");
@@ -73,152 +86,146 @@ public class JsonWorkflowReaderTest {
 		String json = "{ \"name\":\"" + WORKFLOW_NAME + "\"}";
 		
 		//when
-		JsonWorkflow readWorkflow = workflowReader.readWorkflow(json);
+		JsonWorkflow readedWorkflow = workflowReader.read(json);
 		
 		//then
-		assertThat(readWorkflow).hasWorkflowName(WORKFLOW_NAME);
+		assertThat(readedWorkflow).hasWorkflowName(WORKFLOW_NAME);
 	}
 	
 	@Test
 	public void shouldReadedWorkflowHaveInputAndOutputSignals() {
 		
 		//given
-		String json = "{" + getInputSignalJson() + "," + getOutputSignalJson() + "}";
+		String json = "{" + getInputSignalJsonFor(INPUT_SIGNAL) + "," + getOutputSignalJsonFor(OUTPUT_SIGNAL) + "}";
 		
 		//when
-		JsonWorkflow readedWorkflow = workflowReader.readWorkflow(json);
+		JsonWorkflow readedWorkflow = workflowReader.read(json);
 		
 		//then
 		assertThat(readedWorkflow).hasOnlyInputSignals(INPUT_SIGNAL);
 		assertThat(readedWorkflow).hasOnlyOutputSignals(OUTPUT_SIGNAL);
 	}
 	
-	private String getInputSignalJson() {
-		return "\"ins\": [ \"" + INPUT_SIGNAL + "\" ]";
+	private String getInputSignalJsonFor(String inputSignalName) {
+		return "\"ins\": [ \"" + inputSignalName + "\" ]";
 	}
 	
-	private String getOutputSignalJson() {
-		return "\"outs\": [ \"" + OUTPUT_SIGNAL + "\" ]";
+	private String getOutputSignalJsonFor(String outputSignalName) {
+		return "\"outs\": [ \"" + outputSignalName + "\" ]";
 	}
 	
 	@Test
 	public void shouldReadedWorkflowHaveSignals() {
 		
 		//given
-		String json = "{" + getSignalsJson() + "}";
+		JsonSignal[] expectedSignals = expectedSignals();
+		String json = "{" + getSignalsJson(expectedSignals) + "}";
 		
 		//when
-		JsonWorkflow readedWorkflow = workflowReader.readWorkflow(json);
+		JsonWorkflow readedWorkflow = workflowReader.read(json);
 		
 		//then
-		assertThat(readedWorkflow).hasOnlySignals(expectedSignals());
-	}
-	
-	private String getSignalsJson() {
-		return "\"signals\": [ {"
-				+ "\"name\":\"" + INPUT_SIGNAL + "\"},"
-				+ "{\"name\":\"" + OUTPUT_SIGNAL + "\", \"control\":\"" + COUNT_CONTROL + "\" } ]";
+		assertThat(readedWorkflow).hasOnlySignals(expectedSignals);
 	}
 	
 	private JsonSignal[] expectedSignals() {
 		JsonSignal expectedSignals[] = new JsonSignal[] {new JsonSignal(INPUT_SIGNAL), new JsonSignal(OUTPUT_SIGNAL, COUNT_CONTROL)};
 		return expectedSignals;
 	}
+
+	private String getSignalsJson(JsonSignal[] signals) {
+		String signalsJsonString = asList(signals).stream()
+				.map(this::getJsonString)
+				.collect(joining(","));
+		return "\"signals\": [" + signalsJsonString + "]";
+
+	}
+	
+	private String getJsonString(JsonSignal jsonSignal) {
+		String result = "{\"name\":\"" + jsonSignal.getSignalName() + "\"";
+		if (jsonSignal.getControlType() != null) {
+			result += ",\"control\":\"" + jsonSignal.getControlType() + "\"";
+		}
+		result += "}";
+		return result;
+	}
 	
 	@Test
 	public void shouldThrowIllegalArgumentExceptionWhenSignalDoesNotHaveUniqueName() {
 	
 		//given
-		String json = "{" + getSignalsJsonWithNonUniqueNames() + "}";
+		JsonSignal[] signals = new JsonSignal[] {new JsonSignal(INPUT_SIGNAL), new JsonSignal(INPUT_SIGNAL, COUNT_CONTROL)};
+		String json = "{" + getSignalsJson(signals) + "}";
 		
 		//when
-		Throwable thrown = catchThrowable(() -> workflowReader.readWorkflow(json));
+		Throwable thrown = catchThrowable(() -> workflowReader.read(json));
 		
 		//then
 		assertThat(thrown).isInstanceOf(IllegalArgumentException.class).hasCauseInstanceOf(JsonMappingException.class);
 		assertThat(thrown.getCause()).hasMessageContaining("Already had POJO for id");
 	}
 	
-	private String getSignalsJsonWithNonUniqueNames() {
-		return "\"signals\": [ {"
-				+ "\"name\":\"" + INPUT_SIGNAL + "\"},"
-				+ "{\"name\":\"" + INPUT_SIGNAL + "\", \"control\":\"" + COUNT_CONTROL + "\" } ]";
-	}
-	
-	
 	@Test
 	public void shouldReadedWorkflowHaveProcessesWithDefaultTypeWhenTypeNotSpecified() {
 		
 		//given
-		String json = "{" + getProcessesJson() + "}";
+		JsonProcess jsonProcess = aJsonProcess.build();
+		String json = "{" + getProcessesJson(jsonProcess) + "}";
 		
 		//when
-		JsonWorkflow readedWorkflow = workflowReader.readWorkflow(json);
+		JsonWorkflow readedWorkflow = workflowReader.read(json);
 		
 		//then
-		assertThat(readedWorkflow).hasOnlyProcesses(jsonProcessWithDefaultType());
-	}
-	
-	private String getProcessesJson() {
-		return getProcessesJson(Optional.empty());
-	}
-	
-	private JsonProcess jsonProcessWithDefaultType() {
-		JsonProcess expectedProcess = new JsonProcess(PROCESS_NAME, asList(INPUT_SIGNAL), asList(OUTPUT_SIGNAL));
-		expectedProcess.setProperty(FUNC_PROPERTY, FUNC);
-		return expectedProcess;
+		assertThat(readedWorkflow).hasOnlyProcesses(jsonProcess);
 	}
 	
 	@Test
 	public void shouldReadedWorkflowHaveProcessesWithSpecifiedType() {
 		
 		//given
-		String json = "{" + getProcessesJson(FOREACH_TYPE) + "}";
+		JsonProcess jsonProcess = aJsonProcess.withProcessType(HyperflowProcessType.FOREACH).build();
+		String json = "{" + getProcessesJson(jsonProcess) + "}";
 		
 		//when
-		JsonWorkflow readedWorkflow = workflowReader.readWorkflow(json);
+		JsonWorkflow readedWorkflow = workflowReader.read(json);
 		
 		//then
-		assertThat(readedWorkflow).hasOnlyProcesses(jsonProcessWithType(HyperflowProcessType.FOREACH));
-	}
-	
-	private String getProcessesJson(String type) {
-		return getProcessesJson(Optional.of(type));
+		assertThat(readedWorkflow).hasOnlyProcesses(jsonProcess);
 	}
 
-	private JsonProcess jsonProcessWithType(HyperflowProcessType type) {
-		JsonProcess expectedProcess = new JsonProcess(PROCESS_NAME, type, asList(INPUT_SIGNAL), asList(OUTPUT_SIGNAL));
-		expectedProcess.setProperty(FUNC_PROPERTY, FUNC);
-		return expectedProcess;
-	}
-
-	private String getProcessesJson(Optional<String> type) {
-		StringBuilder result = new StringBuilder("\"processes\": [ { " 
-	        + "\"name\": \"" + PROCESS_NAME +"\",");
-		type.ifPresent(t -> result.append("\"" + TYPE_PROPERTY + "\": \"" + t + "\","));
-		result.append("\"" + FUNC_PROPERTY + "\": \"" + FUNC + "\","
-	        + "\"ins\": [ \"" + INPUT_SIGNAL+ "\" ],"
-	        + "\"outs\": [ \""+ OUTPUT_SIGNAL +"\" ]}]");
-		return result.toString();
-	}
-	
 	@Test
 	public void shouldThrowIllegalArgumentExceptionWhenProcessDoesNotHaveUniqueName() {
 		
 		//given
-		String json = "{" + getProcessesJsonWithDuplicatedNames() + "}";
+		JsonProcess jsonProcess = aJsonProcess.build();
+		String json = "{" + getProcessesJson(jsonProcess, processNamedSameAs(jsonProcess)) + "}";
 		
 		//when
-		Throwable thrown = catchThrowable(() -> workflowReader.readWorkflow(json));
+		Throwable thrown = catchThrowable(() -> workflowReader.read(json));
 		
 		//then
 		assertThat(thrown).isInstanceOf(IllegalArgumentException.class).hasCauseInstanceOf(JsonMappingException.class);
 		assertThat(thrown.getCause()).hasMessageContaining("Already had POJO for id");
 	}
 	
-	private String getProcessesJsonWithDuplicatedNames() {
-		return "\"processes\": [ { " 
-		        + "\"name\": \"" + PROCESS_NAME +"\"},"
-			    + "{\"name\": \"" + PROCESS_NAME +"\"}]";
+	private JsonProcess processNamedSameAs(JsonProcess process) {
+		return aJsonProcess.withProcessName(process.getProcessName()).build();
+	}
+
+	private String getProcessesJson(JsonProcess... jsonProcesses) {
+		return "\"processes\": [ " + asList(jsonProcesses).stream().map(this::getProcessJson).collect(joining(",")) + "]";
+	}
+	
+	private String getProcessJson(JsonProcess jsonProcess) {
+		return "{\"name\": \"" + jsonProcess.getProcessName() +"\","
+						+ "\"type\": \"" + jsonProcess.getProcessType() + "\","
+	        			+ "\"ins\": [ \"" + jsonProcess.getInputSignals().stream().collect(joining(",")) + "\" ],"
+	        			+ "\"outs\": [ \""+ jsonProcess.getOutputSignals().stream().collect(joining(",")) +"\" ],"
+	        			+ jsonProcess.getProperties().entrySet().stream().map(this::propertyJsonString).collect(joining(","))
+	        			+ "}";
+	}
+	
+	private String propertyJsonString(Entry<String, String> property) {
+		return "\"" + property.getKey() + "\":\"" + property.getValue() + "\"";
 	}
 }
