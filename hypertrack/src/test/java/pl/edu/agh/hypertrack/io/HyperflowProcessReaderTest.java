@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
 import static pl.edu.agh.hypertrack.io.JsonProcessBuilder.aJsonProcess;
 import static pl.edu.agh.hypertrack.model.HyperflowProcessAssert.assertThat;
 
@@ -18,8 +19,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import pl.edu.agh.hypertrack.model.HyperflowInputSignal;
 import pl.edu.agh.hypertrack.model.HyperflowOutputSignal;
 import pl.edu.agh.hypertrack.model.HyperflowProcess;
-import pl.edu.agh.hypertrack.model.HyperflowProcessType;
-import pl.edu.agh.hypertrack.model.HypertrackEntityUniqueKey;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HyperflowProcessReaderTest {
@@ -34,6 +33,9 @@ public class HyperflowProcessReaderTest {
 	
 	@Mock
 	private JsonProcessSignalsValidator signlasValidator;
+	
+	@Mock
+	private HyperflowProcessFactory processFactory;
 	
 	@InjectMocks
 	private HyperflowProcessReader processReader;
@@ -54,47 +56,24 @@ public class HyperflowProcessReaderTest {
 	}
 	
 	@Test
-	public void shouldReadedProcessHasCorrectKey() {
+	public void shouldReturnProcessCreatedByProcessFactory() {
 		
 		//given
-		JsonProcess jsonProcess = aJsonProcess().withProcessName(PROCESS_NAME).build();
+		HyperflowProcess hyperflowProcess = mock(HyperflowProcess.class);
+		JsonProcess jsonProcess = aJsonProcess().build();
+		given(processFactory.createNewEmptyProcess(WORKFLOW_NAME, jsonProcess)).willReturn(hyperflowProcess);
 		
 		//when
-		HyperflowProcess hyperflowProcess = processReader.read(WORKFLOW_NAME, jsonProcess);
+		HyperflowProcess readedProcess = processReader.read(WORKFLOW_NAME, jsonProcess);
 		
 		//then
-		assertThat(hyperflowProcess).hasKey(new HypertrackEntityUniqueKey(WORKFLOW_NAME, PROCESS_NAME));
-	}
-	
-	@Test
-	public void shouldReadedProcessHasSameTypeAsJsonProcess() {
-		
-		//given
-		JsonProcess jsonProcess = aJsonProcess().withProcessType(HyperflowProcessType.FOREACH).build();
-		
-		//when
-		HyperflowProcess hyperflowProcess = processReader.read(WORKFLOW_NAME, jsonProcess);
-		
-		//then
-		assertThat(hyperflowProcess).hasProcessType(HyperflowProcessType.FOREACH);
-	}
-	
-	@Test
-	public void shouldReadedProcessHasSamePropertiesAsJsonProcess() {
-		
-		//given
-		JsonProcess jsonProcess = aJsonProcess().withProperty("func", "funcVal").build();
-		
-		//when
-		HyperflowProcess hyperflowProcess = processReader.read(WORKFLOW_NAME, jsonProcess);
-		
-		//then
-		assertThat(hyperflowProcess.getProperties()).containsAllEntriesOf(jsonProcess.getProperties());
+		assertThat(readedProcess).isSameAs(hyperflowProcess);
 	}
 	
 	@Test
 	public void shouldReadedProcessHaveSignalsLikeInJsonWorkflow() {
 		
+		//TODO: modify
 		// given
 		JsonProcess jsonProcess = aJsonProcess()
 				.withInputSignals(PROCESS_INPUT_SIGNAL_NAME)

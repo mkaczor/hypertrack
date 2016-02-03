@@ -1,23 +1,19 @@
 package pl.edu.agh.hypertrack.io;
 
 import pl.edu.agh.hypertrack.model.HyperflowProcess;
-import pl.edu.agh.hypertrack.model.HypertrackEntityUniqueKey;
 
 final class HyperflowProcessReader {
-	
 	/*
-	 * TODO:
-	 * - initiazlization (spring boot)
-	 * - builder dla procesu
+	 * TODO: rozwazyc przerobienie na wczytywacz sygnalow
 	 */
 	
 	private HyperflowSignalReader signalReader;
 	private JsonProcessSignalsValidator signalsValidator;
+	private HyperflowProcessFactory processFactory;
 
 	public HyperflowProcess read(String workflowName, JsonProcess jsonProcess) {
 		signalsValidator.validate(jsonProcess);
-		HypertrackEntityUniqueKey key = new HypertrackEntityUniqueKey(workflowName, jsonProcess.getProcessName());
-		HyperflowProcess hyperflowProcess = new HyperflowProcess(key, jsonProcess.getProcessType(), jsonProcess.getProperties());
+		HyperflowProcess hyperflowProcess = processFactory.createNewEmptyProcess(workflowName, jsonProcess);
 		readProcessSignals(hyperflowProcess, jsonProcess);
 		return hyperflowProcess;
 	}
