@@ -1,8 +1,10 @@
 package pl.edu.agh.hypertrack.io;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,10 +13,10 @@ import pl.edu.agh.hypertrack.model.HyperflowProcessType;
 
 public class JsonProcessBuilder {
 
-	private String processName;
+	private String processName = "";
 	private HyperflowProcessType processType = HyperflowProcessType.DATAFLOW;
-	private Collection<String> inputSignals;
-	private Collection<String> outputSignals;
+	private Collection<String> inputSignals = Collections.emptyList();
+	private Collection<String> outputSignals = emptyList();
 	private Map<String, String> properties = new HashMap<>();
 	
 	private JsonProcessBuilder() {}
@@ -25,7 +27,6 @@ public class JsonProcessBuilder {
 	
 	public JsonProcess build() {
 		JsonProcess jsonProcess = new JsonProcess(processName, processType, inputSignals, outputSignals);
-		//TODO: change initialization of properties
 		for (Entry<String, String> property: properties.entrySet()) {
 			jsonProcess.setProperty(property.getKey(), property.getValue());
 		}
@@ -47,7 +48,7 @@ public class JsonProcessBuilder {
 		return this;
 	}
 	
-	public JsonProcessBuilder withOutputSignals(String outputSignals) {
+	public JsonProcessBuilder withOutputSignals(String ...outputSignals) {
 		this.outputSignals = asList(outputSignals);
 		return this;
 	}

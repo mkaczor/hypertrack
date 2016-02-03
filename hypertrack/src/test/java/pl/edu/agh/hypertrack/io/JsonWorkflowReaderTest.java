@@ -119,7 +119,7 @@ public class JsonWorkflowReaderTest {
 	public void shouldThrowIllegalArgumentExceptionWhenSignalDoesNotHaveUniqueName() {
 	
 		//given
-		JsonSignal[] signals = new JsonSignal[] {new JsonSignal(INPUT_SIGNAL), new JsonSignal(INPUT_SIGNAL, COUNT_CONTROL)};
+		JsonSignal[] signals = signalsWithDuplicatedName();
 		String json = jsonGenerator.getJsonForSignals(signals);
 		
 		//when
@@ -128,6 +128,10 @@ public class JsonWorkflowReaderTest {
 		//then
 		assertThat(thrown).isInstanceOf(IllegalArgumentException.class).hasCauseInstanceOf(JsonMappingException.class);
 		assertThat(thrown.getCause()).hasMessageContaining("Already had POJO for id");
+	}
+	
+	private JsonSignal[] signalsWithDuplicatedName() {
+		return new JsonSignal[] {new JsonSignal(INPUT_SIGNAL), new JsonSignal(INPUT_SIGNAL, COUNT_CONTROL)};
 	}
 	
 	@Test

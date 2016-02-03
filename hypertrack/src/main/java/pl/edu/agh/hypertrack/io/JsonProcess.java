@@ -9,6 +9,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -37,6 +38,11 @@ final class JsonProcess {
 	@SuppressWarnings("unused")
 	private JsonProcess() {}
 	
+	
+	/**
+	 * We can't use constructor with {@link JsonCreator} because it doesn't work with
+	 * {@link JsonIdentityInfo}. It may be fixed in subsequent release of jackson.
+	 */
 	JsonProcess(String processName, HyperflowProcessType processType, Collection<String> inputSignals,
 			Collection<String> outputSignals) {
 		this(processName, inputSignals, outputSignals);

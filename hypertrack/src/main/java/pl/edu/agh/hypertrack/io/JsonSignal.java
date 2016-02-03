@@ -4,6 +4,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -24,6 +25,10 @@ final class JsonSignal {
 		this(signalName, null);
 	}
 
+	/**
+	 * We can't use constructor with {@link JsonCreator} because it doesn't work with
+	 * {@link JsonIdentityInfo} . It may be fixed in subsequent release of jackson.
+	 */
 	JsonSignal(String signalName, String controlType) {
 		this.signalName = signalName;
 		this.controlType = controlType;

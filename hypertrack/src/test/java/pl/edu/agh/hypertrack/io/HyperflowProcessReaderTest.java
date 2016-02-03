@@ -1,12 +1,12 @@
 package pl.edu.agh.hypertrack.io;
 
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static pl.edu.agh.hypertrack.io.JsonProcessBuilder.aJsonProcess;
 import static pl.edu.agh.hypertrack.model.HyperflowProcessAssert.assertThat;
 
 import org.junit.Test;
@@ -37,12 +37,12 @@ public class HyperflowProcessReaderTest {
 	
 	@InjectMocks
 	private HyperflowProcessReader processReader;
-
+			
 	@Test
 	public void shouldRethrowExceptionThrownBySignalsValidatorWhenProcessSignalsValidationFails() {
 		
 		//given
-		JsonProcess jsonProcess = aJsonProcess();
+		JsonProcess jsonProcess = aJsonProcess().build();
 		HypertrackJsonReadException validationException = new HypertrackJsonReadException("Validation error");
 		willThrow(validationException).given(signlasValidator).validate(jsonProcess);
 		
@@ -57,7 +57,7 @@ public class HyperflowProcessReaderTest {
 	public void shouldReadedProcessHasCorrectKey() {
 		
 		//given
-		JsonProcess jsonProcess = aJsonProcess();
+		JsonProcess jsonProcess = aJsonProcess().withProcessName(PROCESS_NAME).build();
 		
 		//when
 		HyperflowProcess hyperflowProcess = processReader.read(WORKFLOW_NAME, jsonProcess);
@@ -70,7 +70,7 @@ public class HyperflowProcessReaderTest {
 	public void shouldReadedProcessHasSameTypeAsJsonProcess() {
 		
 		//given
-		JsonProcess jsonProcess = aJsonProcess();
+		JsonProcess jsonProcess = aJsonProcess().withProcessType(HyperflowProcessType.FOREACH).build();
 		
 		//when
 		HyperflowProcess hyperflowProcess = processReader.read(WORKFLOW_NAME, jsonProcess);
@@ -83,8 +83,7 @@ public class HyperflowProcessReaderTest {
 	public void shouldReadedProcessHasSamePropertiesAsJsonProcess() {
 		
 		//given
-		JsonProcess jsonProcess = aJsonProcess();
-		jsonProcess.setProperty("funct", "funcVal");
+		JsonProcess jsonProcess = aJsonProcess().withProperty("func", "funcVal").build();
 		
 		//when
 		HyperflowProcess hyperflowProcess = processReader.read(WORKFLOW_NAME, jsonProcess);
@@ -94,23 +93,24 @@ public class HyperflowProcessReaderTest {
 	}
 	
 	@Test
-	public void shouldReadedProcessHaveProcessLikeInJsonWorkflow() {
+	public void shouldReadedProcessHaveSignalsLikeInJsonWorkflow() {
 		
 		// given
+		JsonProcess jsonProcess = aJsonProcess()
+				.withInputSignals(PROCESS_INPUT_SIGNAL_NAME)
+				.withOutputSignals(PROCESS_OUTPUT_SIGNAL_NAME)
+				.build();
+
 		HyperflowInputSignal input = new HyperflowInputSignal();
 		HyperflowOutputSignal output = new HyperflowOutputSignal();
 		given(signalReader.readInputSignal(any(), eq(PROCESS_INPUT_SIGNAL_NAME))).willReturn(input);
 		given(signalReader.readOutputSignal(any(), eq(PROCESS_OUTPUT_SIGNAL_NAME))).willReturn(output);
 		
 		// when
-		HyperflowProcess hyperflowProcess = processReader.read(WORKFLOW_NAME, aJsonProcess());
+		HyperflowProcess hyperflowProcess = processReader.read(WORKFLOW_NAME, jsonProcess);
 		
 		//then
 		assertThat(hyperflowProcess).hasOnlyInputSignals(input);
 		assertThat(hyperflowProcess).hasOnlyOutputSignals(output);
-	}
-	
-	private JsonProcess aJsonProcess() {
-		return new JsonProcess(PROCESS_NAME, HyperflowProcessType.FOREACH, asList(PROCESS_INPUT_SIGNAL_NAME), asList(PROCESS_OUTPUT_SIGNAL_NAME));
 	}
 }
