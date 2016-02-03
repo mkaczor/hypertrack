@@ -73,7 +73,7 @@ public class JsonWorkflowReaderTest {
 	public void shouldReadedWorkflowHaveName() {
 		
 		//given
-		String json = "{ \"name\":\"" + WORKFLOW_NAME + "\"}";
+		String json = jsonGenerator.getJsonForWorkflowName(WORKFLOW_NAME);
 		
 		//when
 		JsonWorkflow readedWorkflow = workflowReader.read(json);
@@ -86,7 +86,7 @@ public class JsonWorkflowReaderTest {
 	public void shouldReadedWorkflowHaveInputAndOutputSignals() {
 		
 		//given
-		String json = "{" + getInputSignalJsonFor(INPUT_SIGNAL) + "," + getOutputSignalJsonFor(OUTPUT_SIGNAL) + "}";
+		String json = jsonGenerator.getJsonForInputAndOutputSignal(INPUT_SIGNAL, OUTPUT_SIGNAL);
 		
 		//when
 		JsonWorkflow readedWorkflow = workflowReader.read(json);
@@ -94,14 +94,6 @@ public class JsonWorkflowReaderTest {
 		//then
 		assertThat(readedWorkflow).hasOnlyInputSignals(INPUT_SIGNAL);
 		assertThat(readedWorkflow).hasOnlyOutputSignals(OUTPUT_SIGNAL);
-	}
-	
-	private String getInputSignalJsonFor(String inputSignalName) {
-		return "\"ins\": [ \"" + inputSignalName + "\" ]";
-	}
-	
-	private String getOutputSignalJsonFor(String outputSignalName) {
-		return "\"outs\": [ \"" + outputSignalName + "\" ]";
 	}
 	
 	@Test

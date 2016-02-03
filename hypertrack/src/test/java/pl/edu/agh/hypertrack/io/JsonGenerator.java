@@ -40,4 +40,20 @@ public class JsonGenerator {
 		result += "}";
 		return result;
 	}
+	
+	public String getJsonForInputAndOutputSignal(String inputSignal, String outputSignal) {
+		return "{" + getJsonForInputSignal(inputSignal) + "," + getJsonForOutputSignal(outputSignal) + "}";
+	}
+	
+	private String getJsonForInputSignal(String inputSignalName) {
+		return "\"ins\": [ \"" + inputSignalName + "\" ]";
+	}
+	
+	private String getJsonForOutputSignal(String outputSignalName) {
+		return "\"outs\": [ \"" + outputSignalName + "\" ]";
+	}
+	
+	public String getJsonForWorkflowName(String workflowName) {
+		return "{ \"name\":\"" + workflowName + "\"}";
+	}
 }
