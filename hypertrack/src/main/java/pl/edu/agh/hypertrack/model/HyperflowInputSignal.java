@@ -2,12 +2,21 @@ package pl.edu.agh.hypertrack.model;
 
 public class HyperflowInputSignal {
 
-	private HypertrackEntityUniqueKey key;
+	private HypertrackEntityKey key;
 	private HyperflowOutputSignal source;
 	private HyperflowProcess target;
 	private HyperflowInputActivationCondition activationCondition;
 	
-	public HypertrackEntityUniqueKey getKey() {
+	public HyperflowInputSignal(HyperflowProcess target, HypertrackEntityKey key) {
+		this.target = target;
+		this.key = key;
+	}
+	
+	public void setActivationCondition(HyperflowInputActivationCondition activationCondition) {
+		this.activationCondition = activationCondition;
+	}
+	
+	public HypertrackEntityKey getKey() {
 		return key;
 	}
 	

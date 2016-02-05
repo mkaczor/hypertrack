@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import pl.edu.agh.hypertrack.model.HyperflowProcess;
 import pl.edu.agh.hypertrack.model.HyperflowProcessType;
-import pl.edu.agh.hypertrack.model.HypertrackEntityUniqueKey;
+import pl.edu.agh.hypertrack.model.HypertrackEntityKey;
 
 public class HyperflowProcessFactoryTest {
 
@@ -27,7 +27,7 @@ public class HyperflowProcessFactoryTest {
 		HyperflowProcess hyperflowProcess = processFactory.createNewEmptyProcess(WORKFLOW_NAME, jsonProcess);
 		
 		//then
-		assertThat(hyperflowProcess).hasKey(new HypertrackEntityUniqueKey(WORKFLOW_NAME, PROCESS_NAME));
+		assertThat(hyperflowProcess).hasKey(new HypertrackEntityKey(WORKFLOW_NAME, PROCESS_NAME));
 	}
 	
 	@Test

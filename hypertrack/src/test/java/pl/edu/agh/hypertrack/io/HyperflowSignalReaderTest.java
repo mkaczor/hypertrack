@@ -3,42 +3,82 @@ package pl.edu.agh.hypertrack.io;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.BDDMockito.given;
 import static pl.edu.agh.hypertrack.model.HyperflowInputSignalAssert.assertThat;
 import static pl.edu.agh.hypertrack.model.HyperflowOutputSignalAssert.assertThat;
 
+import java.util.Map;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import pl.edu.agh.hypertrack.model.HyperflowInputSignal;
 import pl.edu.agh.hypertrack.model.HyperflowOutputSignal;
 import pl.edu.agh.hypertrack.model.HyperflowProcess;
 import pl.edu.agh.hypertrack.model.HyperflowProcessType;
-import pl.edu.agh.hypertrack.model.HypertrackEntityUniqueKey;
+import pl.edu.agh.hypertrack.model.HypertrackEntityKey;
 
+@RunWith(MockitoJUnitRunner.class)
 public class HyperflowSignalReaderTest {
 
 	private static final String WORKFLOW_NAME = "workflowName";
 	private static final String SIGNAL_NAME = "signalName";
 	private static final String PROCESS_NAME = "processName";
 	
-	private HyperflowSignalReader signalReader = new HyperflowSignalReader();
+	@Mock
+	private Map<String, JsonSignal> jsonSignals;
 	
-	private HypertrackEntityUniqueKey signalKey = new HypertrackEntityUniqueKey(WORKFLOW_NAME, SIGNAL_NAME);
-	private HypertrackEntityUniqueKey processKey = new HypertrackEntityUniqueKey(WORKFLOW_NAME, PROCESS_NAME);
+	@InjectMocks
+	private HyperflowSignalReader signalReader = new HyperflowSignalReader(WORKFLOW_NAME);
 	
+	private HypertrackEntityKey signalKey = new HypertrackEntityKey(WORKFLOW_NAME, SIGNAL_NAME);
 	
+	private HyperflowProcess process = new HyperflowProcess(new HypertrackEntityKey(WORKFLOW_NAME, PROCESS_NAME),
+			HyperflowProcessType.DATAFLOW, emptyMap());	
 	
 	@Test
-	public void shouldReadInputSignalWhenSignalNameAndTargetProcessSpecified() {
+	public void shouldThrowHypertrackJsonReadExceptionWhenReadingOutputSignalWithNameNotSpecifiedInJson() {
 		
 		//given
-		HyperflowProcess targetProcess = new HyperflowProcess(processKey, HyperflowProcessType.DATAFLOW, emptyMap());
+		given(jsonSignals.containsKey(SIGNAL_NAME)).willReturn(false);
+	
+		//when
+		Throwable thrown = catchThrowable(() -> signalReader.readOutputSignal(process, SIGNAL_NAME));
+		
+		//then
+		assertThat(thrown).isInstanceOf(HypertrackJsonReadException.class)
+			.hasMessageContaining("No signal named " + SIGNAL_NAME + " defined, but used as output of process " + PROCESS_NAME);
+	}
+	
+	@Test
+	public void shouldThrowHypertrackJsonReadExceptionWhenReadingInputSignalWithNameNotSpecifiedInJson() {
+		
+		//given
+		given(jsonSignals.containsKey(SIGNAL_NAME)).willReturn(false);
+	
+		//when
+		Throwable thrown = catchThrowable(() -> signalReader.readInputSignal(process, SIGNAL_NAME));
+		
+		//then
+		assertThat(thrown).isInstanceOf(HypertrackJsonReadException.class)
+			.hasMessageContaining("No signal named " + SIGNAL_NAME + " defined, but used as input to process " + PROCESS_NAME);
+	}
+
+	@Test
+	public void shouldReadInputSignalWhenSignalNameAndSourceProcessSpecified() {
+		
+		//given
+		given(jsonSignals.containsKey(SIGNAL_NAME)).willReturn(true);
 		
 		//when
-		HyperflowInputSignal inputSignal = signalReader.readInputSignal(targetProcess, SIGNAL_NAME);
+		HyperflowInputSignal inputSignal = signalReader.readInputSignal(process, SIGNAL_NAME);
 		
 		//then
 		assertThat(inputSignal).hasKey(signalKey);
-		assertThat(inputSignal).hasTarget(targetProcess);
+		assertThat(inputSignal).hasTarget(process);
 		assertThat(inputSignal).hasSource(null); //TODO: hasNoSource
 	}
 	
@@ -46,30 +86,14 @@ public class HyperflowSignalReaderTest {
 	public void shouldReadOutputSignalWhenSignalNameAndSourceProcessSpecified() {
 		
 		//given
-		HyperflowProcess sourceProcess = new HyperflowProcess(processKey, HyperflowProcessType.DATAFLOW, emptyMap());
+		given(jsonSignals.containsKey(SIGNAL_NAME)).willReturn(true);
 		
 		//when
-		HyperflowOutputSignal outputSignal = signalReader.readOutputSignal(sourceProcess, SIGNAL_NAME);
+		HyperflowOutputSignal outputSignal = signalReader.readOutputSignal(process, SIGNAL_NAME);
 		
 		//then
 		assertThat(outputSignal).hasKey(signalKey);
-		assertThat(outputSignal).hasSource(sourceProcess);
+		assertThat(outputSignal).hasSource(process);
 		assertThat(outputSignal).hasNoTarget();
-	}
-	
-	@Test
-	public void shouldThrowIllegalArgumentExceptionWhenReadingOutputSignalWithSameNameButDifferentSource() {
-		
-		//given
-		HyperflowProcess sourceProcess = new HyperflowProcess(processKey, HyperflowProcessType.DATAFLOW, emptyMap());
-		HyperflowProcess secondSourceProcess = new HyperflowProcess(
-				new HypertrackEntityUniqueKey(WORKFLOW_NAME, "differentProcessName"), HyperflowProcessType.DATAFLOW, emptyMap());
-		
-		//when
-		signalReader.readOutputSignal(sourceProcess, SIGNAL_NAME);
-		Throwable thrown = catchThrowable(() -> signalReader.readOutputSignal(secondSourceProcess, SIGNAL_NAME));
-		
-		//then
-		assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
 	}
 }

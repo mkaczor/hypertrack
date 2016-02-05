@@ -33,7 +33,7 @@ public class HyperflowOutputSignalAssert extends AbstractAssert<HyperflowOutputS
    * @return this assertion object.
    * @throws AssertionError - if the actual HyperflowOutputSignal's key is not equal to the given one.
    */
-  public HyperflowOutputSignalAssert hasKey(HypertrackEntityUniqueKey key) {
+  public HyperflowOutputSignalAssert hasKey(HypertrackEntityKey key) {
     // check that actual HyperflowOutputSignal we want to make assertions on is not null.
     isNotNull();
 
@@ -41,7 +41,7 @@ public class HyperflowOutputSignalAssert extends AbstractAssert<HyperflowOutputS
     String assertjErrorMessage = "\nExpecting key of:\n  <%s>\nto be:\n  <%s>\nbut was:\n  <%s>";
     
     // null safe check
-    HypertrackEntityUniqueKey actualKey = actual.getKey();
+    HypertrackEntityKey actualKey = actual.getKey();
     if (!Objects.areEqual(actualKey, key)) {
       failWithMessage(assertjErrorMessage, actual, key, actualKey);
     }

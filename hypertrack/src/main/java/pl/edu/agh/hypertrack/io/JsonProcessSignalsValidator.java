@@ -1,5 +1,6 @@
 package pl.edu.agh.hypertrack.io;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.Collection;
@@ -33,7 +34,12 @@ class JsonProcessSignalsValidator {
 	}
 
 	private boolean hasDuplicatedInputSignals(JsonProcess jsonProcess) {
-		return hasDuplicates(jsonProcess.getInputSignals());
+		return hasDuplicates(jsonProcess.getInputSignals().stream()
+				.map(this::getInputSignalNameWithoutActivationIndicator).collect(toList()));
+	}
+	
+	private String getInputSignalNameWithoutActivationIndicator(String inputSignalName) {
+		return inputSignalName.split(":")[0];
 	}
 	
 	private boolean hasDuplicatedOutputSignals(JsonProcess jsonProcess) {

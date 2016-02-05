@@ -21,7 +21,7 @@ import pl.edu.agh.hypertrack.model.HyperflowInputSignal;
 import pl.edu.agh.hypertrack.model.HyperflowOutputSignal;
 import pl.edu.agh.hypertrack.model.HyperflowProcess;
 import pl.edu.agh.hypertrack.model.HyperflowWorkflow;
-import pl.edu.agh.hypertrack.model.HypertrackEntityUniqueKey;
+import pl.edu.agh.hypertrack.model.HypertrackEntityKey;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HyperflowWorkflowReaderIT {
@@ -60,7 +60,7 @@ public class HyperflowWorkflowReaderIT {
 		assertThat(workflowInput).hasTarget(workflow.getProcessForName(PROCESS_1_NAME).get()); //TODO: skad referencja na sygnal?
 		assertThat(workflowInput).hasActivationCondition(fixedNumberOfSignalInstances(1));
 		assertThat(workflowInput).hasSource(null); //TODO: hasNoSource
-		assertThat(workflowInput).hasKey(new HypertrackEntityUniqueKey(WORKFLOW_NAME, WORKFLOW_INPUT_SIGNAL));
+		assertThat(workflowInput).hasKey(new HypertrackEntityKey(WORKFLOW_NAME, WORKFLOW_INPUT_SIGNAL));
 	}
 	
 	@Test
@@ -75,7 +75,7 @@ public class HyperflowWorkflowReaderIT {
 		//then
 		assertThat(workflow.getWorkflowOutput()).hasSize(1);
 		HyperflowOutputSignal workflowOutput = workflow.getWorkflowOutput().iterator().next();
-		assertThat(workflowOutput).hasKey(new HypertrackEntityUniqueKey(WORKFLOW_NAME, WORKFLOW_OUTPUT_SIGNAL));
+		assertThat(workflowOutput).hasKey(new HypertrackEntityKey(WORKFLOW_NAME, WORKFLOW_OUTPUT_SIGNAL));
 		assertThat(workflowOutput).hasSource(workflow.getProcessForName(PROCESS_3_NAME).get());
 		assertThat(workflowOutput).hasNoTarget();
 	}
@@ -95,15 +95,15 @@ public class HyperflowWorkflowReaderIT {
 		HyperflowProcess hyperflowProcess2 = workflow.getProcessForName(PROCESS_2_NAME).get();
 		HyperflowProcess hyperflowProcess3 = workflow.getProcessForName(PROCESS_3_NAME).get();
 		
-		assertThat(hyperflowProcess1).hasKey(new HypertrackEntityUniqueKey(WORKFLOW_NAME, PROCESS_1_NAME));
+		assertThat(hyperflowProcess1).hasKey(new HypertrackEntityKey(WORKFLOW_NAME, PROCESS_1_NAME));
 		assertThat(hyperflowProcess1).hasOnlyInputSignals(workflow.getWorkflowInput().iterator().next());
 		assertThat(hyperflowProcess1).hasOnlyOutputSignals(workflow.getOutputSignalForName(PROCESS_1_OUTPUT_SIGNAL_NAME).get());
 
-		assertThat(hyperflowProcess2).hasKey(new HypertrackEntityUniqueKey(WORKFLOW_NAME, PROCESS_2_NAME));
+		assertThat(hyperflowProcess2).hasKey(new HypertrackEntityKey(WORKFLOW_NAME, PROCESS_2_NAME));
 		assertThat(hyperflowProcess2).hasOnlyInputSignals(workflow.getInputSignalForName(PROCESS_1_OUTPUT_SIGNAL_NAME).get());
 		assertThat(hyperflowProcess2).hasOnlyOutputSignals(workflow.getOutputSignalForName(PROCESS_2_OUTPUT_SIGNAL_NAME).get());
 		
-		assertThat(hyperflowProcess3).hasKey(new HypertrackEntityUniqueKey(WORKFLOW_NAME, PROCESS_3_NAME));
+		assertThat(hyperflowProcess3).hasKey(new HypertrackEntityKey(WORKFLOW_NAME, PROCESS_3_NAME));
 		assertThat(hyperflowProcess3).hasOnlyInputSignals(
 				workflow.getInputSignalForName(PROCESS_2_OUTPUT_SIGNAL_NAME).get(),
 				workflow.getInputSignalForName(PROCESS_1_OUTPUT_SIGNAL_NAME).get());

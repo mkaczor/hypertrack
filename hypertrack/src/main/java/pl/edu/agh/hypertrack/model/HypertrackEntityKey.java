@@ -4,12 +4,12 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-public class HypertrackEntityUniqueKey {
+public class HypertrackEntityKey {
 	
 	private String workflowName;
 	private String entityName;
 	
-	public HypertrackEntityUniqueKey(String workflowName, String entityName) {
+	public HypertrackEntityKey(String workflowName, String entityName) {
 		this.workflowName = workflowName;
 		this.entityName = entityName;
 	}

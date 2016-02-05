@@ -18,7 +18,7 @@ public class JsonProcessSignalsValidatorTest {
 	private JsonProcessSignalsValidator validator = new JsonProcessSignalsValidator();
 	
 	@Test
-	public void shouldThrowHypertrackJsonReadExceptionWhenValidatingProcessWithDuplicatedInputSignals() {
+	public void shouldThrowExceptionWhenValidatingProcessWithDuplicatedInputSignals() {
 		
 		//given
 		JsonProcess jsonProcess = new JsonProcess(PROCESS_NAME, asList(INPUT_SIGNAL, INPUT_SIGNAL), asList(OUTPUT_SIGNAL));
@@ -31,7 +31,20 @@ public class JsonProcessSignalsValidatorTest {
 	}
 	
 	@Test
-	public void shouldThrowHypertrackJsonReadExceptionWhenValidatingProcessWithNoInputSignals() {
+	public void shouldThrowExceptionWhenValidatingProcessWithTwoInputSignalsWithSameNameButDifferentActivationIndicator() {
+		
+		//given
+		JsonProcess jsonProcess = new JsonProcess(PROCESS_NAME, asList(INPUT_SIGNAL, INPUT_SIGNAL + ":2"), asList(OUTPUT_SIGNAL));
+		
+		//when
+		Throwable thrown = catchThrowable(() -> validator.validate(jsonProcess));
+				
+		//then
+		assertThat(thrown).isInstanceOf(HypertrackJsonReadException.class).hasMessageContaining("duplicated input signals defined");
+	}
+	
+	@Test
+	public void shouldThrowExceptionWhenValidatingProcessWithNoInputSignals() {
 
 		// given
 		JsonProcess jsonProcess = new JsonProcess(PROCESS_NAME, emptyList(), asList(OUTPUT_SIGNAL));

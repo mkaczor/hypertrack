@@ -116,7 +116,7 @@ public class HyperflowProcessAssert extends AbstractAssert<HyperflowProcessAsser
    * @return this assertion object.
    * @throws AssertionError - if the actual HyperflowProcess's key is not equal to the given one.
    */
-  public HyperflowProcessAssert hasKey(HypertrackEntityUniqueKey key) {
+  public HyperflowProcessAssert hasKey(HypertrackEntityKey key) {
     // check that actual HyperflowProcess we want to make assertions on is not null.
     isNotNull();
 
@@ -124,7 +124,7 @@ public class HyperflowProcessAssert extends AbstractAssert<HyperflowProcessAsser
     String assertjErrorMessage = "\nExpecting key of:\n  <%s>\nto be:\n  <%s>\nbut was:\n  <%s>";
     
     // null safe check
-    HypertrackEntityUniqueKey actualKey = actual.getKey();
+    HypertrackEntityKey actualKey = actual.getKey();
     if (!Objects.areEqual(actualKey, key)) {
       failWithMessage(assertjErrorMessage, actual, key, actualKey);
     }

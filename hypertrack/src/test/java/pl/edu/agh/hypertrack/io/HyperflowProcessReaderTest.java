@@ -19,7 +19,7 @@ import pl.edu.agh.hypertrack.model.HyperflowInputSignal;
 import pl.edu.agh.hypertrack.model.HyperflowOutputSignal;
 import pl.edu.agh.hypertrack.model.HyperflowProcess;
 import pl.edu.agh.hypertrack.model.HyperflowProcessType;
-import pl.edu.agh.hypertrack.model.HypertrackEntityUniqueKey;
+import pl.edu.agh.hypertrack.model.HypertrackEntityKey;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HyperflowProcessReaderTest {
@@ -80,8 +80,8 @@ public class HyperflowProcessReaderTest {
 				.withOutputSignals(PROCESS_OUTPUT_SIGNAL_NAME)
 				.build();
 
-		HyperflowInputSignal input = new HyperflowInputSignal();
-		HyperflowOutputSignal output = new HyperflowOutputSignal();
+		HyperflowInputSignal input = mock(HyperflowInputSignal.class);
+		HyperflowOutputSignal output = mock(HyperflowOutputSignal.class);
 		HyperflowProcess emptyHyperflowProcess = emptyHyperflowProcess();
 		given(processFactory.createNewEmptyProcess(WORKFLOW_NAME, jsonProcess)).willReturn(emptyHyperflowProcess);
 		given(signalReader.readInputSignal(emptyHyperflowProcess, PROCESS_INPUT_SIGNAL_NAME)).willReturn(input);
@@ -96,7 +96,7 @@ public class HyperflowProcessReaderTest {
 	}
 	
 	private HyperflowProcess emptyHyperflowProcess() {
-		return new HyperflowProcess(new HypertrackEntityUniqueKey(WORKFLOW_NAME, PROCESS_NAME),
+		return new HyperflowProcess(new HypertrackEntityKey(WORKFLOW_NAME, PROCESS_NAME),
 				HyperflowProcessType.DATAFLOW, emptyMap());
 	}
 }

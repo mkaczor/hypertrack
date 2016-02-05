@@ -55,7 +55,7 @@ public class HyperflowInputSignalAssert extends AbstractAssert<HyperflowInputSig
    * @return this assertion object.
    * @throws AssertionError - if the actual HyperflowInputSignal's key is not equal to the given one.
    */
-  public HyperflowInputSignalAssert hasKey(HypertrackEntityUniqueKey key) {
+  public HyperflowInputSignalAssert hasKey(HypertrackEntityKey key) {
     // check that actual HyperflowInputSignal we want to make assertions on is not null.
     isNotNull();
 
@@ -63,7 +63,7 @@ public class HyperflowInputSignalAssert extends AbstractAssert<HyperflowInputSig
     String assertjErrorMessage = "\nExpecting key of:\n  <%s>\nto be:\n  <%s>\nbut was:\n  <%s>";
     
     // null safe check
-    HypertrackEntityUniqueKey actualKey = actual.getKey();
+    HypertrackEntityKey actualKey = actual.getKey();
     if (!Objects.areEqual(actualKey, key)) {
       failWithMessage(assertjErrorMessage, actual, key, actualKey);
     }
