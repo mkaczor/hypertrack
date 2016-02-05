@@ -1,11 +1,10 @@
 package pl.edu.agh.hypertrack.io;
 
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static pl.edu.agh.hypertrack.io.JsonProcessBuilder.aJsonProcess;
 import static pl.edu.agh.hypertrack.model.HyperflowProcessAssert.assertThat;
@@ -19,6 +18,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import pl.edu.agh.hypertrack.model.HyperflowInputSignal;
 import pl.edu.agh.hypertrack.model.HyperflowOutputSignal;
 import pl.edu.agh.hypertrack.model.HyperflowProcess;
+import pl.edu.agh.hypertrack.model.HyperflowProcessType;
+import pl.edu.agh.hypertrack.model.HypertrackEntityUniqueKey;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HyperflowProcessReaderTest {
@@ -73,7 +74,6 @@ public class HyperflowProcessReaderTest {
 	@Test
 	public void shouldReadedProcessHaveSignalsLikeInJsonWorkflow() {
 		
-		//TODO: modify
 		// given
 		JsonProcess jsonProcess = aJsonProcess()
 				.withInputSignals(PROCESS_INPUT_SIGNAL_NAME)
@@ -82,8 +82,10 @@ public class HyperflowProcessReaderTest {
 
 		HyperflowInputSignal input = new HyperflowInputSignal();
 		HyperflowOutputSignal output = new HyperflowOutputSignal();
-		given(signalReader.readInputSignal(any(), eq(PROCESS_INPUT_SIGNAL_NAME))).willReturn(input);
-		given(signalReader.readOutputSignal(any(), eq(PROCESS_OUTPUT_SIGNAL_NAME))).willReturn(output);
+		HyperflowProcess emptyHyperflowProcess = emptyHyperflowProcess();
+		given(processFactory.createNewEmptyProcess(WORKFLOW_NAME, jsonProcess)).willReturn(emptyHyperflowProcess);
+		given(signalReader.readInputSignal(emptyHyperflowProcess, PROCESS_INPUT_SIGNAL_NAME)).willReturn(input);
+		given(signalReader.readOutputSignal(emptyHyperflowProcess, PROCESS_OUTPUT_SIGNAL_NAME)).willReturn(output);
 		
 		// when
 		HyperflowProcess hyperflowProcess = processReader.read(WORKFLOW_NAME, jsonProcess);
@@ -91,5 +93,10 @@ public class HyperflowProcessReaderTest {
 		//then
 		assertThat(hyperflowProcess).hasOnlyInputSignals(input);
 		assertThat(hyperflowProcess).hasOnlyOutputSignals(output);
+	}
+	
+	private HyperflowProcess emptyHyperflowProcess() {
+		return new HyperflowProcess(new HypertrackEntityUniqueKey(WORKFLOW_NAME, PROCESS_NAME),
+				HyperflowProcessType.DATAFLOW, emptyMap());
 	}
 }

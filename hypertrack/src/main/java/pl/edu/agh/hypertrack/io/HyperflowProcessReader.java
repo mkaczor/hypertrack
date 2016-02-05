@@ -3,10 +3,7 @@ package pl.edu.agh.hypertrack.io;
 import pl.edu.agh.hypertrack.model.HyperflowProcess;
 
 final class HyperflowProcessReader {
-	/*
-	 * TODO: rozwazyc przerobienie na wczytywacz sygnalow
-	 */
-	
+
 	private HyperflowSignalReader signalReader;
 	private JsonProcessSignalsValidator signalsValidator;
 	private HyperflowProcessFactory processFactory;
