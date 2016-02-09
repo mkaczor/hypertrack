@@ -28,7 +28,7 @@ final class JsonProcess {
 	private HyperflowProcessType processType = HyperflowProcessType.DATAFLOW;
 
 	@JsonProperty("ins")
-	private Collection<String> inputSignals;
+	private Collection<JsonProcessInputSignal> inputSignals;
 	
 	@JsonProperty("outs")
 	private Collection<String> outputSignals;
@@ -43,13 +43,13 @@ final class JsonProcess {
 	 * We can't use constructor with {@link JsonCreator} because it doesn't work with
 	 * {@link JsonIdentityInfo}. It may be fixed in subsequent release of jackson.
 	 */
-	JsonProcess(String processName, HyperflowProcessType processType, Collection<String> inputSignals,
+	JsonProcess(String processName, HyperflowProcessType processType, Collection<JsonProcessInputSignal> inputSignals,
 			Collection<String> outputSignals) {
 		this(processName, inputSignals, outputSignals);
 		this.processType = processType;
 	}
 
-	JsonProcess(String processName, Collection<String> inputSignals,
+	JsonProcess(String processName, Collection<JsonProcessInputSignal> inputSignals,
 			Collection<String> outputSignals) {
 		this.processName = processName;
 		this.inputSignals = inputSignals;
@@ -61,7 +61,7 @@ final class JsonProcess {
 		return processName;
 	}
 
-	public Collection<String> getInputSignals() {
+	public Collection<JsonProcessInputSignal> getInputSignals() {
 		return inputSignals;
 	}
 

@@ -1,27 +1,27 @@
 package pl.edu.agh.hypertrack.io;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-import java.util.Collections;
-
 import org.junit.Test;
 
-public class JsonProcessSignalsValidatorTest {
+public class JsonProcessValidatorTest {
 
 	private static final String PROCESS_NAME = "name";
 	private static final String INPUT_SIGNAL = "in";
 	private static final String OUTPUT_SIGNAL = "out";
 	
-	private JsonProcessSignalsValidator validator = new JsonProcessSignalsValidator();
+	private JsonProcessValidator validator = new JsonProcessValidator();
+	
+	private JsonProcessBuilder aJsonProcess = JsonProcessBuilder.aJsonProcess().withProcessName(PROCESS_NAME)
+			.withInputSignals(INPUT_SIGNAL)
+			.withOutputSignals(OUTPUT_SIGNAL);
 	
 	@Test
 	public void shouldThrowExceptionWhenValidatingProcessWithDuplicatedInputSignals() {
 		
 		//given
-		JsonProcess jsonProcess = new JsonProcess(PROCESS_NAME, asList(INPUT_SIGNAL, INPUT_SIGNAL), asList(OUTPUT_SIGNAL));
+		JsonProcess jsonProcess = aJsonProcess.withInputSignals(INPUT_SIGNAL, INPUT_SIGNAL).build();
 		
 		//when
 		Throwable thrown = catchThrowable(() -> validator.validate(jsonProcess));
@@ -34,7 +34,7 @@ public class JsonProcessSignalsValidatorTest {
 	public void shouldThrowExceptionWhenValidatingProcessWithTwoInputSignalsWithSameNameButDifferentActivationIndicator() {
 		
 		//given
-		JsonProcess jsonProcess = new JsonProcess(PROCESS_NAME, asList(INPUT_SIGNAL, INPUT_SIGNAL + ":2"), asList(OUTPUT_SIGNAL));
+		JsonProcess jsonProcess = aJsonProcess.withInputSignals(INPUT_SIGNAL, INPUT_SIGNAL + ":2").build();
 		
 		//when
 		Throwable thrown = catchThrowable(() -> validator.validate(jsonProcess));
@@ -47,7 +47,7 @@ public class JsonProcessSignalsValidatorTest {
 	public void shouldThrowExceptionWhenValidatingProcessWithNoInputSignals() {
 
 		// given
-		JsonProcess jsonProcess = new JsonProcess(PROCESS_NAME, emptyList(), asList(OUTPUT_SIGNAL));
+		JsonProcess jsonProcess = aJsonProcess.withInputSignals().build();
 
 		// when
 		Throwable thrown = catchThrowable(() -> validator.validate(jsonProcess));
@@ -60,7 +60,7 @@ public class JsonProcessSignalsValidatorTest {
 	public void shouldThrowHypertrackJsonReadExceptionWhenValidatingProcessWithDuplicatedOutputSignals() {
 		
 		//given
-		JsonProcess jsonProcess = new JsonProcess(PROCESS_NAME, asList(INPUT_SIGNAL), asList(OUTPUT_SIGNAL, OUTPUT_SIGNAL));
+		JsonProcess jsonProcess = aJsonProcess.withOutputSignals(OUTPUT_SIGNAL, OUTPUT_SIGNAL).build();
 		
 		//when
 		Throwable thrown = catchThrowable(() -> validator.validate(jsonProcess));
@@ -73,7 +73,7 @@ public class JsonProcessSignalsValidatorTest {
 	public void shouldThrowHypertrackJsonReadExceptionWhenValidatingProcessWithNoOutputSignals() {
 
 		// given
-		JsonProcess jsonProcess = new JsonProcess(PROCESS_NAME, asList(INPUT_SIGNAL), Collections.emptyList());
+		JsonProcess jsonProcess = aJsonProcess.withOutputSignals().build();
 
 		// when
 		Throwable thrown = catchThrowable(() -> validator.validate(jsonProcess));
@@ -86,7 +86,7 @@ public class JsonProcessSignalsValidatorTest {
 	public void shouldNotThrowExceptionWhenValidatingProcessWithCorrectSignalsDefinition() {
 		
 		// given
-		JsonProcess jsonProcess = new JsonProcess(PROCESS_NAME, asList(INPUT_SIGNAL), asList(OUTPUT_SIGNAL));
+		JsonProcess jsonProcess = aJsonProcess.build();
 
 		// when
 		Throwable thrown = catchThrowable(() -> validator.validate(jsonProcess));

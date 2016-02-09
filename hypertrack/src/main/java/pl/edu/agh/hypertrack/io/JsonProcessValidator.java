@@ -6,7 +6,7 @@ import static java.util.stream.Collectors.toSet;
 import java.util.Collection;
 import java.util.Set;
 
-class JsonProcessSignalsValidator {
+class JsonProcessValidator {
 
 	public void validate(JsonProcess jsonProcess) {
 		validateInputSignals(jsonProcess);
@@ -35,11 +35,8 @@ class JsonProcessSignalsValidator {
 
 	private boolean hasDuplicatedInputSignals(JsonProcess jsonProcess) {
 		return hasDuplicates(jsonProcess.getInputSignals().stream()
-				.map(this::getInputSignalNameWithoutActivationIndicator).collect(toList()));
-	}
-	
-	private String getInputSignalNameWithoutActivationIndicator(String inputSignalName) {
-		return inputSignalName.split(":")[0];
+				.map(JsonProcessInputSignal::getName)
+				.collect(toList()));
 	}
 	
 	private boolean hasDuplicatedOutputSignals(JsonProcess jsonProcess) {

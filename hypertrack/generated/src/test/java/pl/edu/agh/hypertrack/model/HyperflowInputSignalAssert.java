@@ -27,22 +27,22 @@ public class HyperflowInputSignalAssert extends AbstractAssert<HyperflowInputSig
   }
 
   /**
-   * Verifies that the actual HyperflowInputSignal's activationCondition is equal to the given one.
-   * @param activationCondition the given activationCondition to compare the actual HyperflowInputSignal's activationCondition to.
+   * Verifies that the actual HyperflowInputSignal's activationIndicator is equal to the given one.
+   * @param activationIndicator the given activationIndicator to compare the actual HyperflowInputSignal's activationIndicator to.
    * @return this assertion object.
-   * @throws AssertionError - if the actual HyperflowInputSignal's activationCondition is not equal to the given one.
+   * @throws AssertionError - if the actual HyperflowInputSignal's activationIndicator is not equal to the given one.
    */
-  public HyperflowInputSignalAssert hasActivationCondition(HyperflowInputActivationCondition activationCondition) {
+  public HyperflowInputSignalAssert hasActivationIndicator(HyperflowInputActivationIndicator activationIndicator) {
     // check that actual HyperflowInputSignal we want to make assertions on is not null.
     isNotNull();
 
     // overrides the default error message with a more explicit one
-    String assertjErrorMessage = "\nExpecting activationCondition of:\n  <%s>\nto be:\n  <%s>\nbut was:\n  <%s>";
+    String assertjErrorMessage = "\nExpecting activationIndicator of:\n  <%s>\nto be:\n  <%s>\nbut was:\n  <%s>";
     
     // null safe check
-    HyperflowInputActivationCondition actualActivationCondition = actual.getActivationCondition();
-    if (!Objects.areEqual(actualActivationCondition, activationCondition)) {
-      failWithMessage(assertjErrorMessage, actual, activationCondition, actualActivationCondition);
+    HyperflowInputActivationIndicator actualActivationIndicator = actual.getActivationIndicator();
+    if (!Objects.areEqual(actualActivationIndicator, activationIndicator)) {
+      failWithMessage(assertjErrorMessage, actual, activationIndicator, actualActivationIndicator);
     }
 
     // return the current assertion for method chaining

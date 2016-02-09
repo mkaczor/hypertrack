@@ -33,7 +33,7 @@ public class HyperflowProcessReaderTest {
 	private HyperflowSignalReader signalReader;
 	
 	@Mock
-	private JsonProcessSignalsValidator signlasValidator;
+	private JsonProcessValidator signlasValidator;
 	
 	@Mock
 	private HyperflowProcessFactory processFactory;
@@ -84,7 +84,7 @@ public class HyperflowProcessReaderTest {
 		HyperflowOutputSignal output = mock(HyperflowOutputSignal.class);
 		HyperflowProcess emptyHyperflowProcess = emptyHyperflowProcess();
 		given(processFactory.createNewEmptyProcess(WORKFLOW_NAME, jsonProcess)).willReturn(emptyHyperflowProcess);
-		given(signalReader.readInputSignal(emptyHyperflowProcess, PROCESS_INPUT_SIGNAL_NAME)).willReturn(input);
+		given(signalReader.readInputSignal(emptyHyperflowProcess, new JsonProcessInputSignal(PROCESS_INPUT_SIGNAL_NAME))).willReturn(input);
 		given(signalReader.readOutputSignal(emptyHyperflowProcess, PROCESS_OUTPUT_SIGNAL_NAME)).willReturn(output);
 		
 		// when

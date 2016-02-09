@@ -7,6 +7,16 @@ package pl.edu.agh.hypertrack.io;
 public class Assertions {
 
   /**
+   * Creates a new instance of <code>{@link pl.edu.agh.hypertrack.io.JsonProcessInputSignalAssert}</code>.
+   *
+   * @param actual the actual value.
+   * @return the created assertion object.
+   */
+  public static pl.edu.agh.hypertrack.io.JsonProcessInputSignalAssert assertThat(pl.edu.agh.hypertrack.io.JsonProcessInputSignal actual) {
+    return new pl.edu.agh.hypertrack.io.JsonProcessInputSignalAssert(actual);
+  }
+
+  /**
    * Creates a new instance of <code>{@link pl.edu.agh.hypertrack.io.JsonWorkflowAssert}</code>.
    *
    * @param actual the actual value.
@@ -14,6 +24,16 @@ public class Assertions {
    */
   public static pl.edu.agh.hypertrack.io.JsonWorkflowAssert assertThat(pl.edu.agh.hypertrack.io.JsonWorkflow actual) {
     return new pl.edu.agh.hypertrack.io.JsonWorkflowAssert(actual);
+  }
+
+  /**
+   * Creates a new instance of <code>{@link pl.edu.agh.hypertrack.model.HyperflowInputActivationIndicatorAssert}</code>.
+   *
+   * @param actual the actual value.
+   * @return the created assertion object.
+   */
+  public static pl.edu.agh.hypertrack.model.HyperflowInputActivationIndicatorAssert assertThat(pl.edu.agh.hypertrack.model.HyperflowInputActivationIndicator actual) {
+    return new pl.edu.agh.hypertrack.model.HyperflowInputActivationIndicatorAssert(actual);
   }
 
   /**

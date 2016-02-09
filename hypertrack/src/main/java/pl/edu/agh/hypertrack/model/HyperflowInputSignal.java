@@ -5,15 +5,15 @@ public class HyperflowInputSignal {
 	private HypertrackEntityKey key;
 	private HyperflowOutputSignal source;
 	private HyperflowProcess target;
-	private HyperflowInputActivationCondition activationCondition;
+	private HyperflowInputActivationIndicator activationIndicator;
 	
 	public HyperflowInputSignal(HyperflowProcess target, HypertrackEntityKey key) {
 		this.target = target;
 		this.key = key;
 	}
 	
-	public void setActivationCondition(HyperflowInputActivationCondition activationCondition) {
-		this.activationCondition = activationCondition;
+	public void setActivationCondition(HyperflowInputActivationIndicator activationCondition) {
+		this.activationIndicator = activationCondition;
 	}
 	
 	public HypertrackEntityKey getKey() {
@@ -28,7 +28,7 @@ public class HyperflowInputSignal {
 		return target;
 	}
 	
-	public HyperflowInputActivationCondition getActivationCondition() {
-		return activationCondition;
+	public HyperflowInputActivationIndicator getActivationIndicator() {
+		return activationIndicator;
 	}
 }

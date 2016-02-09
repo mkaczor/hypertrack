@@ -14,7 +14,7 @@ public class JsonGenerator {
 	private String getProcessJson(JsonProcess jsonProcess) {
 		return "{\"name\": \"" + jsonProcess.getProcessName() +"\","
 						+ "\"type\": \"" + jsonProcess.getProcessType() + "\","
-	        			+ "\"ins\": [ \"" + jsonProcess.getInputSignals().stream().collect(joining(",")) + "\" ],"
+	        			+ "\"ins\": [ \"" + jsonProcess.getInputSignals().stream().map(JsonProcessInputSignal::toString).collect(joining(",")) + "\" ],"
 	        			+ "\"outs\": [ \""+ jsonProcess.getOutputSignals().stream().collect(joining(",")) +"\" ],"
 	        			+ jsonProcess.getProperties().entrySet().stream().map(this::propertyJsonString).collect(joining(","))
 	        			+ "}";

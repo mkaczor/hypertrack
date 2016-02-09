@@ -4,10 +4,10 @@ import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.mock;
 import static pl.edu.agh.hypertrack.model.HyperflowInputSignalAssert.assertThat;
 import static pl.edu.agh.hypertrack.model.HyperflowOutputSignalAssert.assertThat;
-
-import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import pl.edu.agh.hypertrack.model.HyperflowInputActivationIndicator;
 import pl.edu.agh.hypertrack.model.HyperflowInputSignal;
 import pl.edu.agh.hypertrack.model.HyperflowOutputSignal;
 import pl.edu.agh.hypertrack.model.HyperflowProcess;
@@ -29,7 +30,10 @@ public class HyperflowSignalReaderTest {
 	private static final String PROCESS_NAME = "processName";
 	
 	@Mock
-	private Map<String, JsonSignal> jsonSignals;
+	private JsonSignalValidator validator;
+	
+	@Mock
+	private HyperflowInputActivatioIndicatorFactory activationIndicatorFactory;
 	
 	@InjectMocks
 	private HyperflowSignalReader signalReader = new HyperflowSignalReader(WORKFLOW_NAME);
@@ -40,41 +44,25 @@ public class HyperflowSignalReaderTest {
 			HyperflowProcessType.DATAFLOW, emptyMap());	
 	
 	@Test
-	public void shouldThrowHypertrackJsonReadExceptionWhenReadingOutputSignalWithNameNotSpecifiedInJson() {
+	public void shouldRethrowExceptionThrownBySignalValidatorWhenInputSignalValidationFails() {
 		
 		//given
-		given(jsonSignals.containsKey(SIGNAL_NAME)).willReturn(false);
-	
+		HypertrackJsonReadException validationException = new HypertrackJsonReadException("Validation error");
+		JsonProcessInputSignal inputSignal = new JsonProcessInputSignal(SIGNAL_NAME);
+		willThrow(validationException).given(validator).validateInputSignal(inputSignal, process);
+		
 		//when
-		Throwable thrown = catchThrowable(() -> signalReader.readOutputSignal(process, SIGNAL_NAME));
+		Throwable thrown = catchThrowable(() -> signalReader.readInputSignal(process, inputSignal));
 		
 		//then
-		assertThat(thrown).isInstanceOf(HypertrackJsonReadException.class)
-			.hasMessageContaining("No signal named " + SIGNAL_NAME + " defined, but used as output of process " + PROCESS_NAME);
+		assertThat(thrown).isSameAs(validationException);
 	}
 	
-	@Test
-	public void shouldThrowHypertrackJsonReadExceptionWhenReadingInputSignalWithNameNotSpecifiedInJson() {
-		
-		//given
-		given(jsonSignals.containsKey(SIGNAL_NAME)).willReturn(false);
-	
-		//when
-		Throwable thrown = catchThrowable(() -> signalReader.readInputSignal(process, SIGNAL_NAME));
-		
-		//then
-		assertThat(thrown).isInstanceOf(HypertrackJsonReadException.class)
-			.hasMessageContaining("No signal named " + SIGNAL_NAME + " defined, but used as input to process " + PROCESS_NAME);
-	}
-
 	@Test
 	public void shouldReadInputSignalWhenSignalNameAndSourceProcessSpecified() {
 		
-		//given
-		given(jsonSignals.containsKey(SIGNAL_NAME)).willReturn(true);
-		
 		//when
-		HyperflowInputSignal inputSignal = signalReader.readInputSignal(process, SIGNAL_NAME);
+		HyperflowInputSignal inputSignal = signalReader.readInputSignal(process, new JsonProcessInputSignal(SIGNAL_NAME));
 		
 		//then
 		assertThat(inputSignal).hasKey(signalKey);
@@ -83,10 +71,36 @@ public class HyperflowSignalReaderTest {
 	}
 	
 	@Test
-	public void shouldReadOutputSignalWhenSignalNameAndSourceProcessSpecified() {
+	public void shouldReadedInputSignalHaveActivationIndicatorReturnedByFactory() {
 		
 		//given
-		given(jsonSignals.containsKey(SIGNAL_NAME)).willReturn(true);
+		JsonProcessInputSignal inputSignal = new JsonProcessInputSignal(SIGNAL_NAME);
+		HyperflowInputActivationIndicator activationIndicator = mock(HyperflowInputActivationIndicator.class);
+		given(activationIndicatorFactory.createActivationIndicator(inputSignal)).willReturn(activationIndicator);
+		
+		//when
+		HyperflowInputSignal hyperflowInputSignal = signalReader.readInputSignal(process, inputSignal);
+		
+		//then
+		assertThat(hyperflowInputSignal).hasActivationIndicator(activationIndicator);
+	}
+	
+	@Test
+	public void shouldRethrowExceptionThrownBySignalValidatorWhenOutputSignalValidationFails() {
+		
+		//given
+		HypertrackJsonReadException validationException = new HypertrackJsonReadException("Validation error");
+		willThrow(validationException).given(validator).validateOutputSignal(SIGNAL_NAME, process);
+		
+		//when
+		Throwable thrown = catchThrowable(() -> signalReader.readOutputSignal(process, SIGNAL_NAME));
+		
+		//then
+		assertThat(thrown).isSameAs(validationException);
+	}
+	
+	@Test
+	public void shouldReadOutputSignalWhenSignalNameAndSourceProcessSpecified() {
 		
 		//when
 		HyperflowOutputSignal outputSignal = signalReader.readOutputSignal(process, SIGNAL_NAME);

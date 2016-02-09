@@ -5,7 +5,7 @@ import pl.edu.agh.hypertrack.model.HyperflowProcess;
 final class HyperflowProcessReader {
 
 	private HyperflowSignalReader signalReader;
-	private JsonProcessSignalsValidator signalsValidator;
+	private JsonProcessValidator signalsValidator;
 	private HyperflowProcessFactory processFactory;
 
 	public HyperflowProcess read(String workflowName, JsonProcess jsonProcess) {

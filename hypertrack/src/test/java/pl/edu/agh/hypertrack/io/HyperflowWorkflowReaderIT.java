@@ -1,10 +1,8 @@
 package pl.edu.agh.hypertrack.io;
 
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static pl.edu.agh.hypertrack.io.JsonWorkflowBuilder.aJsonWorkflow;
-import static pl.edu.agh.hypertrack.model.HyperflowInputActivationCondition.fixedNumberOfSignalInstances;
 import static pl.edu.agh.hypertrack.model.HyperflowInputSignalAssert.assertThat;
 import static pl.edu.agh.hypertrack.model.HyperflowOutputSignalAssert.assertThat;
 import static pl.edu.agh.hypertrack.model.HyperflowProcessAssert.assertThat;
@@ -58,7 +56,7 @@ public class HyperflowWorkflowReaderIT {
 		assertThat(workflow.getWorkflowInput()).hasSize(1);
 		HyperflowInputSignal workflowInput = workflow.getWorkflowInput().iterator().next();
 		assertThat(workflowInput).hasTarget(workflow.getProcessForName(PROCESS_1_NAME).get()); //TODO: skad referencja na sygnal?
-		assertThat(workflowInput).hasActivationCondition(fixedNumberOfSignalInstances(1));
+//		assertThat(workflowInput).hasActivationCondition(fixedNumberOfSignalInstances(1));
 		assertThat(workflowInput).hasSource(null); //TODO: hasNoSource
 		assertThat(workflowInput).hasKey(new HypertrackEntityKey(WORKFLOW_NAME, WORKFLOW_INPUT_SIGNAL));
 	}
@@ -142,9 +140,9 @@ public class HyperflowWorkflowReaderIT {
 	}
 	
 	private JsonWorkflowBuilder aCorrectJsonWorkflow() {
-		JsonProcess process1 = new JsonProcess(PROCESS_1_NAME, asList(WORKFLOW_INPUT_SIGNAL), asList(PROCESS_1_OUTPUT_SIGNAL_NAME));
-		JsonProcess process2 = new JsonProcess(PROCESS_2_NAME, asList(PROCESS_1_OUTPUT_SIGNAL_NAME), asList(PROCESS_1_OUTPUT_SIGNAL_NAME));
-		JsonProcess process3 = new JsonProcess(PROCESS_3_NAME, asList(PROCESS_1_OUTPUT_SIGNAL_NAME, PROCESS_2_OUTPUT_SIGNAL_NAME), asList(WORKFLOW_OUTPUT_SIGNAL));
+//		JsonProcess process1 = new JsonProcess(PROCESS_1_NAME, asList(WORKFLOW_INPUT_SIGNAL), asList(PROCESS_1_OUTPUT_SIGNAL_NAME));
+//		JsonProcess process2 = new JsonProcess(PROCESS_2_NAME, asList(PROCESS_1_OUTPUT_SIGNAL_NAME), asList(PROCESS_1_OUTPUT_SIGNAL_NAME));
+//		JsonProcess process3 = new JsonProcess(PROCESS_3_NAME, asList(PROCESS_1_OUTPUT_SIGNAL_NAME, PROCESS_2_OUTPUT_SIGNAL_NAME), asList(WORKFLOW_OUTPUT_SIGNAL));
 		JsonSignal inputSignal = new JsonSignal(WORKFLOW_INPUT_SIGNAL);
 		JsonSignal process1Signal = new JsonSignal(PROCESS_1_OUTPUT_SIGNAL_NAME);
 		JsonSignal process2Signal = new JsonSignal(PROCESS_2_OUTPUT_SIGNAL_NAME);
@@ -152,7 +150,7 @@ public class HyperflowWorkflowReaderIT {
 		return aJsonWorkflow().withName(WORKFLOW_NAME)
 			.withInputSignals(WORKFLOW_INPUT_SIGNAL)
 			.withOutputSignals(WORKFLOW_OUTPUT_SIGNAL)
-			.withSignals(inputSignal, process1Signal, process2Signal, outputSignal)
-			.withProcesses(process1, process2, process3);
+			.withSignals(inputSignal, process1Signal, process2Signal, outputSignal);
+//			.withProcesses(process1, process2, process3);
 	}
 }

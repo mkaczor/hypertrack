@@ -33,6 +33,8 @@
 							<param>pl.edu.agh.hypertrack.model.HyperflowInputSignal</param>
 							<param>pl.edu.agh.hypertrack.model.HyperflowOutputSignal</param>
 							<param>pl.edu.agh.hypertrack.model.HyperflowProcess</param>
+							<param>pl.edu.agh.hypertrack.io.JsonProcessInputSignal</param>
+							<param>pl.edu.agh.hypertrack.model.HyperflowInputActivationIndicator</param>
 						</classes>
 						<targetDir>generated/src/test/java</targetDir>
 						<generateAssertions>true</generateAssertions>
