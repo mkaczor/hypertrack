@@ -5,7 +5,10 @@ import java.util.Map;
 class CountedSignalActivationIndicatorValidator {
 
 	private Map<String, JsonSignal> jsonSignals; 
-	
+
+	/*
+		Test change to check if commit works
+	 */
 	public void validateActivationIndicator(JsonProcessInputSignal inputSignal) {
 		if (signalToBeCountedNotDefined(inputSignal)) {
 			throw new HypertrackJsonReadException("No signal named %s defined, but used as count by signal %s",
