@@ -9,7 +9,9 @@ import pl.edu.agh.hypertrack.model.HyperflowInputActivationIndicator;
 public class HyperflowInputActivatioIndicatorFactory {
 
 	private CountedSignalActivationIndicatorValidator validator;
-	
+
+	// test
+
 	public HyperflowInputActivationIndicator createActivationIndicator(JsonProcessInputSignal inputSignal) {
 		String activationIndicator = inputSignal.getActivationIndicator();
 		if (isNumeric(activationIndicator)) {
